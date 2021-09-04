@@ -1,19 +1,15 @@
 <template>
-  <a
-    href="#"
-    class="weather-card btn d-flex align-items-center py-2"
-    style="width: 16rem"
-  >
-    <div class="w-25">Icon</div>
-    <div class="w-75 d-flex flex-column align-items-center">
-      <div>{{ title }}</div>
+  <a href="#" class="flex items-center p-4" style="width: 16rem">
+    <div class="w-1/4">Icon</div>
+    <div class="flex-grow flex flex-col items-center">
+      <span>{{ title }}</span>
       <div
-        class="d-flex align-items-end gap-2"
+        class="flex items-end space-x-2"
         v-for="d in data"
         v-bind:key="d.name"
       >
-        <div class="pb-2">{{ d.name }}</div>
-        <div class="fs-1">{{ d.value }}</div>
+        <div class="text-sm pb-1">{{ d.name }}</div>
+        <div class="text-5xl font-bold">{{ d.value }}</div>
       </div>
     </div>
   </a>
@@ -25,11 +21,3 @@ export default {
   props: ["title", "data"],
 };
 </script>
-
-<style scoped>
-.weather-card {
-  background-color: #495057;
-  color: #e9ecef;
-  border-radius: 0;
-}
-</style>

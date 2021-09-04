@@ -1,7 +1,7 @@
 <template>
-  <button type="button" class="btn btn-square btn-sm">
+  <a class="py-2 px-4 text-xs shadow-lg text-center" href="#">
     <slot></slot>
-  </button>
+  </a>
 </template>
 
 <script>
@@ -14,14 +14,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.btn.btn-xs {
-  padding: 0.1rem 0.75rem;
-  font-size: 0.75rem;
-}
-
-.btn.btn-square {
-  border-radius: 0;
-}
-</style>

@@ -1,82 +1,104 @@
 <template>
-  <div class="">
-    <Navbar />
-    <div id="main" class="d-flex py-5 px-4">
-      <div id="sidebar" class="d-flex flex-column gap-2">
-        <div>Map</div>
-        <div class="d-flex justify-content-evenly mb-2">
-          <button type="button" class="btn btn-light btn-xs rounded-pill">
-            Min
-          </button>
-          <button type="button" class="btn btn-secondary btn-xs rounded-pill">
-            Max
-          </button>
-        </div>
-        <div class="d-flex flex-column gap-3">
-          <Button
-            v-for="w in weather"
+  <Navbar />
+  <div id="main" class="flex py-8 px-4 bg-gray-700 text-gray-200">
+    <div id="sidebar" class="flex flex-col space-y-4 items-center">
+      <span class="text-xl font-bold">Map</span>
+      <!-- <div class="flex justify-evenly mb-2">
+        <button type="button" class="btn btn-light btn-xs rounded-pill">
+          Min
+        </button>
+        <button type="button" class="btn btn-secondary btn-xs rounded-pill">
+          Max
+        </button>
+      </div> -->
+      <div class="flex flex-col space-y-3">
+        <Button
+          v-for="w in weather"
+          :key="w.name"
+          @click="activeVariable = w.name"
+          :class="[
+            activeVariable === w.name
+              ? 'text-gray-900 bg-gray-200 font-bold'
+              : 'text-gray-200 bg-gray-500 hover:bg-gray-200 hover:text-gray-500',
+          ]"
+        >
+          {{ w.title }}
+        </Button>
+      </div>
+    </div>
+    <div id="map" class="flex flex-col" style="width: 400px">
+      <img
+        alt="Map"
+        src="./assets/map/wrf-wpd_mean.png"
+        class="transform scale-100"
+      />
+      <img
+        alt="Colobar"
+        src="./assets/map/cmap/wrf-wpd_cmap.png"
+        class="transform scale-50"
+      />
+    </div>
+    <div id="info" class="flex flex-col items-start">
+      <span class="text-sm font-extralight">3 Sept 2021</span>
+      <span class="text-3xl mb-3">Clean Power | Weather Forecast</span>
+      <div>
+        <select
+          class="
+            w-full
+            border
+            bg-white
+            rounded
+            px-3
+            py-2
+            outline-none
+            text-gray-900
+          "
+        >
+          <option selected>Ateneo de Manila University</option>
+          <option value="1">One</option>
+          <option value="2">Two</option>
+          <option value="3">Three</option>
+        </select>
+      </div>
+      <div class="w-full">
+        <nav
+          class="text-2xl font-extralight border-b-2 mt-6 flex justify-evenly"
+        >
+          <a class="nav-link nav-btn-square bg-secondary active" href="#"
+            >Today</a
+          >
+          <a class="nav-link text-light" href="#">Tomorrow</a>
+          <a class="nav-link text-light" href="#">Extended</a>
+        </nav>
+      </div>
+      <div class="flex flex-col p-6 space-y-6">
+        <div class="flex justify-center space-x-6">
+          <WeatherCard
+            v-for="w in cleanEnergyVars"
             :key="w.name"
+            :title="variableTitle(w.title, w.units)"
+            :data="w.data"
             @click="activeVariable = w.name"
-            :class="[activeVariable === w.name ? 'btn-light' : 'btn-secondary']"
-          >
-            {{ w.title }}
-          </Button>
+            :class="[
+              activeVariable === w.name
+                ? 'text-white bg-gray-400'
+                : 'text-gray-200 bg-gray-600 hover:bg-gray-200 hover:text-gray-600',
+            ]"
+          />
         </div>
-      </div>
-      <div
-        id="map"
-        class="d-flex flex-column align-items-center"
-        style="width: 400px"
-      >
-        <img alt="Map" src="./assets/map/wrf-wpd_mean.png" />
-        <img
-          alt="Colobar"
-          src="./assets/map/cmap/wrf-wpd_cmap.png"
-          style="height: 6%; width: 50%"
-        />
-      </div>
-      <div id="info" class="d-flex flex-column align-items-start flex-grow-1">
-        <span>3 Sept 2021</span>
-        <span class="fs-3 mb-3">Clean Power | Weather Forecast</span>
-        <div>
-          <select class="form-select" aria-label="Default select example">
-            <option selected>Ateneo de Manila University</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
-          </select>
-        </div>
-        <div class="w-100">
-          <nav
-            class="nav nav-pills justify-content-evenly mt-5 fs-5 border-bottom"
-          >
-            <a
-              class="nav-link nav-btn-square bg-secondary active"
-              aria-current="page"
-              href="#"
-              >Today</a
-            >
-            <a class="nav-link text-light" href="#">Tomorrow</a>
-            <a class="nav-link text-light" href="#">Extended</a>
-          </nav>
-        </div>
-        <div class="d-flex flex-column p-3 w-100 gap-3">
-          <div class="d-flex justify-content-center gap-4 w-100">
-            <WeatherCard
-              v-for="w in cleanEnergyVars"
-              :key="w.name"
-              :title="variableTitle(w.title, w.units)"
-              :data="w.data"
-            />
-          </div>
-          <div class="d-flex justify-content-center gap-4 w-100">
-            <WeatherCard
-              v-for="w in weatherVars"
-              :key="w.name"
-              :title="variableTitle(w.title, w.units)"
-              :data="w.data"
-            />
-          </div>
+        <div class="flex justify-center space-x-6">
+          <WeatherCard
+            v-for="w in weatherVars"
+            :key="w.name"
+            :title="variableTitle(w.title, w.units)"
+            :data="w.data"
+            @click="activeVariable = w.name"
+            :class="[
+              activeVariable === w.name
+                ? 'text-white bg-gray-400'
+                : 'text-gray-200 bg-gray-600 hover:bg-gray-200 hover:text-gray-600',
+            ]"
+          />
         </div>
       </div>
     </div>
@@ -163,26 +185,3 @@ export default {
   },
 };
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #212529;
-}
-
-#main {
-  background-color: #212529;
-  color: #e9ecef;
-}
-
-.nav-pills .nav-link.nav-btn-square {
-  border-radius: 0;
-}
-
-.weather-card {
-  background-color: #495057;
-}
-</style>
