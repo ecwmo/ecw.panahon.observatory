@@ -69,86 +69,20 @@
         </div>
         <div class="d-flex flex-column p-3 w-100 gap-3">
           <div class="d-flex justify-content-center gap-4 w-100">
-            <div
-              class="weather-card d-flex align-items-center py-2"
-              style="width: 16rem"
-            >
-              <div class="w-25">Icon</div>
-              <div class="w-75 d-flex flex-column align-items-center">
-                <div>WIND POWER (MW)</div>
-                <div class="d-flex align-items-end gap-2">
-                  <div class="pb-2">Ave</div>
-                  <div class="fs-1">5.4</div>
-                </div>
-                <div class="d-flex align-items-end gap-2">
-                  <div class="pb-2">Max</div>
-                  <div class="fs-1">8.3</div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="weather-card d-flex align-items-center py-2"
-              style="width: 16rem"
-            >
-              <div class="w-25">Icon</div>
-              <div class="w-75 d-flex flex-column align-items-center">
-                <div>SOLAR POWER (MW)</div>
-                <div class="d-flex align-items-end gap-2">
-                  <div class="pb-2">Ave</div>
-                  <div class="fs-1">2.3</div>
-                </div>
-                <div class="d-flex align-items-end gap-2">
-                  <div class="pb-2">Max</div>
-                  <div class="fs-1">8.3</div>
-                </div>
-              </div>
-            </div>
+            <WeatherCard
+              v-for="w in cleanEnergyVars"
+              :key="w.name"
+              :title="w.title"
+              :data="w.data"
+            />
           </div>
           <div class="d-flex justify-content-center gap-4 w-100">
-            <div
-              class="weather-card d-flex align-items-center py-2"
-              style="width: 16rem"
-            >
-              <div class="w-25">Icon</div>
-              <div class="w-75 d-flex flex-column align-items-center">
-                <div>TEMPERATURE (°C)</div>
-                <div class="d-flex align-items-end gap-2">
-                  <div class="pb-2">Min</div>
-                  <div class="fs-1">28</div>
-                </div>
-                <div class="d-flex align-items-end gap-2">
-                  <div class="pb-2">Max</div>
-                  <div class="fs-1">37</div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="weather-card d-flex align-items-center py-2"
-              style="width: 16rem"
-            >
-              <div class="w-25">Icon</div>
-              <div class="w-75 d-flex flex-column align-items-center">
-                <div>WIND SPEED (kph)</div>
-                <div class="d-flex align-items-end gap-2">
-                  <div class="pb-2">Min</div>
-                  <div class="fs-1">3</div>
-                </div>
-                <div class="d-flex align-items-end gap-2">
-                  <div class="pb-2">Max</div>
-                  <div class="fs-1">14</div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="weather-card d-flex align-items-center py-2"
-              style="width: 16rem"
-            >
-              <div class="w-25">Icon</div>
-              <div class="w-75 d-flex flex-column align-items-center">
-                <div>RAIN CHANCE</div>
-                <div class="fs-1">LOW</div>
-              </div>
-            </div>
+            <WeatherCard
+              v-for="w in weatherVars"
+              :key="w.name"
+              :title="w.title"
+              :data="w.data"
+            />
           </div>
         </div>
       </div>
@@ -158,11 +92,68 @@
 
 <script>
 import Navbar from "./components/Navbar.vue";
+import WeatherCard from "./components/WeatherCard.vue";
 
 export default {
   name: "App",
   components: {
     Navbar,
+    WeatherCard,
+  },
+  data: function () {
+    return {
+      weather: [
+        {
+          name: "wpd",
+          title: "WIND POWER (MW)",
+          data: [
+            { name: "Ave", value: 5.4 },
+            { name: "Max", value: 8.3 },
+          ],
+        },
+        {
+          name: "ppv",
+          title: "SOLAR POWER (MW)",
+          data: [
+            { name: "Ave", value: 2.3 },
+            { name: "Max", value: 8.3 },
+          ],
+        },
+        {
+          name: "temp",
+          title: "TEMPERATURE (°C)",
+          data: [
+            { name: "Min", value: 28 },
+            { name: "Max", value: 37 },
+          ],
+        },
+        {
+          name: "wind",
+          title: "WIND SPEED (kph)",
+          data: [
+            { name: "Min", value: 3 },
+            { name: "Max", value: 14 },
+          ],
+        },
+        {
+          name: "rainchance",
+          title: "RAIN CHANCE",
+          data: [{ value: "LOW" }],
+        },
+      ],
+    };
+  },
+  computed: {
+    cleanEnergyVars() {
+      return this.weather.filter(
+        ({ name }) => ["wpd", "ppv"].indexOf(name) !== -1
+      );
+    },
+    weatherVars() {
+      return this.weather.filter(
+        ({ name }) => ["wpd", "ppv"].indexOf(name) === -1
+      );
+    },
   },
 };
 </script>
