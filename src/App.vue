@@ -13,21 +13,14 @@
           </button>
         </div>
         <div class="d-flex flex-column gap-3">
-          <button type="button" class="btn btn-light btn-square btn-sm">
-            WIND POWER
-          </button>
-          <button type="button" class="btn btn-secondary btn-square btn-sm">
-            SOLAR POWER
-          </button>
-          <button type="button" class="btn btn-secondary btn-square btn-sm">
-            TEMPERATURE
-          </button>
-          <button type="button" class="btn btn-secondary btn-square btn-sm">
-            WIND SPEED
-          </button>
-          <button type="button" class="btn btn-secondary btn-square btn-sm">
-            RAIN
-          </button>
+          <Button
+            v-for="w in weather"
+            :key="w.name"
+            @click="activeVariable = w.name"
+            :class="[activeVariable === w.name ? 'btn-light' : 'btn-secondary']"
+          >
+            {{ w.title }}
+          </Button>
         </div>
       </div>
       <div
@@ -72,7 +65,7 @@
             <WeatherCard
               v-for="w in cleanEnergyVars"
               :key="w.name"
-              :title="w.title"
+              :title="variableTitle(w.title, w.units)"
               :data="w.data"
             />
           </div>
@@ -80,7 +73,7 @@
             <WeatherCard
               v-for="w in weatherVars"
               :key="w.name"
-              :title="w.title"
+              :title="variableTitle(w.title, w.units)"
               :data="w.data"
             />
           </div>
@@ -92,20 +85,24 @@
 
 <script>
 import Navbar from "./components/Navbar.vue";
+import Button from "./components/Button.vue";
 import WeatherCard from "./components/WeatherCard.vue";
 
 export default {
   name: "App",
   components: {
     Navbar,
+    Button,
     WeatherCard,
   },
   data: function () {
     return {
+      activeVariable: "wpd",
       weather: [
         {
           name: "wpd",
-          title: "WIND POWER (MW)",
+          units: "MW",
+          title: "WIND POWER",
           data: [
             { name: "Ave", value: 5.4 },
             { name: "Max", value: 8.3 },
@@ -113,7 +110,8 @@ export default {
         },
         {
           name: "ppv",
-          title: "SOLAR POWER (MW)",
+          units: "MW",
+          title: "SOLAR POWER",
           data: [
             { name: "Ave", value: 2.3 },
             { name: "Max", value: 8.3 },
@@ -121,7 +119,8 @@ export default {
         },
         {
           name: "temp",
-          title: "TEMPERATURE (°C)",
+          units: "°C",
+          title: "TEMPERATURE",
           data: [
             { name: "Min", value: 28 },
             { name: "Max", value: 37 },
@@ -129,7 +128,8 @@ export default {
         },
         {
           name: "wind",
-          title: "WIND SPEED (kph)",
+          units: "kph",
+          title: "WIND SPEED",
           data: [
             { name: "Min", value: 3 },
             { name: "Max", value: 14 },
@@ -155,6 +155,12 @@ export default {
       );
     },
   },
+  methods: {
+    variableTitle(title, units = "") {
+      if (units !== "") return `${title} (${units})`;
+      return title;
+    },
+  },
 };
 </script>
 
@@ -170,15 +176,6 @@ export default {
 #main {
   background-color: #212529;
   color: #e9ecef;
-}
-
-.btn.btn-xs {
-  padding: 0.1rem 0.75rem;
-  font-size: 0.75rem;
-}
-
-.btn.btn-square {
-  border-radius: 0;
 }
 
 .nav-pills .nav-link.nav-btn-square {
