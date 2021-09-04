@@ -1,45 +1,46 @@
 <template>
   <Navbar />
   <div id="main" class="flex py-8 px-4 bg-gray-700 text-gray-200">
-    <div id="sidebar" class="flex flex-col space-y-4 items-center">
+    <div id="sidebar" class="flex flex-col space-y-4 items-center w-1/12">
       <span class="text-xl font-bold">Map</span>
-      <!-- <div class="flex justify-evenly mb-2">
-        <button type="button" class="btn btn-light btn-xs rounded-pill">
-          Min
-        </button>
-        <button type="button" class="btn btn-secondary btn-xs rounded-pill">
-          Max
-        </button>
-      </div> -->
-      <div class="flex flex-col space-y-3">
-        <Button
-          v-for="w in weather"
-          :key="w.name"
-          @click="activeVariable = w.name"
+      <div class="flex space-x-2 mb-2">
+        <a
+          class="py-0.5 px-3 text-xs shadow-lg text-center rounded-full"
+          href="#"
+          v-for="(v, idx) in forecastImgVariants"
+          :key="v"
+          @click="activeImgType = idx"
           :class="[
-            activeVariable === w.name
+            activeImgType === idx
+              ? 'text-gray-900 bg-gray-200 font-bold'
+              : 'text-gray-200 bg-gray-500 hover:bg-gray-200 hover:text-gray-500',
+          ]"
+          >{{ v }}</a
+        >
+      </div>
+      <div class="flex flex-col space-y-3">
+        <a
+          class="py-2 px-4 text-xs shadow-lg text-center"
+          href="#"
+          v-for="v in forecastVars"
+          :key="v.name"
+          @click="activeVariable = v.name"
+          :class="[
+            activeVariable === v.name
               ? 'text-gray-900 bg-gray-200 font-bold'
               : 'text-gray-200 bg-gray-500 hover:bg-gray-200 hover:text-gray-500',
           ]"
         >
-          {{ w.title }}
-        </Button>
+          {{ v.title }}
+        </a>
       </div>
     </div>
     <div id="map" class="flex flex-col" style="width: 400px">
-      <img
-        alt="Map"
-        src="./assets/map/wrf-wpd_mean.png"
-        class="transform scale-100"
-      />
-      <img
-        alt="Colobar"
-        src="./assets/map/cmap/wrf-wpd_cmap.png"
-        class="transform scale-50"
-      />
+      <img alt="Map" :src="forecastImg" class="transform scale-100" />
+      <img alt="Colobar" :src="forecastImgCmap" class="transform scale-50" />
     </div>
     <div id="info" class="flex flex-col items-start">
-      <span class="text-sm font-extralight">3 Sept 2021</span>
+      <span class="text-sm font-extralight">{{ dateString }}</span>
       <span class="text-3xl mb-3">Clean Power | Weather Forecast</span>
       <div>
         <select
@@ -53,28 +54,50 @@
             outline-none
             text-gray-900
           "
+          v-model="activeSite"
         >
-          <option selected>Ateneo de Manila University</option>
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
+          <option v-for="fd in forecastData" :key="fd.name">
+            {{ fd.name }}
+          </option>
         </select>
       </div>
       <div class="w-full">
         <nav
           class="text-2xl font-extralight border-b-2 mt-6 flex justify-evenly"
         >
-          <a class="nav-link nav-btn-square bg-secondary active" href="#"
+          <a
+            class="py-2 px-4 text-center"
+            href="#"
+            @click="activeDay = 0"
+            :class="[
+              activeDay === 0 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
+            ]"
             >Today</a
           >
-          <a class="nav-link text-light" href="#">Tomorrow</a>
-          <a class="nav-link text-light" href="#">Extended</a>
+          <a
+            class="py-2 px-4 text-center"
+            href="#"
+            @click="activeDay = 1"
+            :class="[
+              activeDay === 1 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
+            ]"
+            >Tomorrow</a
+          >
+          <a
+            class="py-2 px-4 text-center"
+            href="#"
+            @click="activeDay = 4"
+            :class="[
+              activeDay === 4 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
+            ]"
+            >Extended</a
+          >
         </nav>
       </div>
       <div class="flex flex-col p-6 space-y-6">
         <div class="flex justify-center space-x-6">
           <WeatherCard
-            v-for="w in cleanEnergyVars"
+            v-for="w in cleanEnergyData"
             :key="w.name"
             :title="variableTitle(w.title, w.units)"
             :data="w.data"
@@ -88,7 +111,7 @@
         </div>
         <div class="flex justify-center space-x-6">
           <WeatherCard
-            v-for="w in weatherVars"
+            v-for="w in weatherData"
             :key="w.name"
             :title="variableTitle(w.title, w.units)"
             :data="w.data"
@@ -106,75 +129,137 @@
 </template>
 
 <script>
+import axios from "axios";
+import { format } from "date-fns";
 import Navbar from "./components/Navbar.vue";
-import Button from "./components/Button.vue";
 import WeatherCard from "./components/WeatherCard.vue";
 
 export default {
   name: "App",
   components: {
     Navbar,
-    Button,
     WeatherCard,
   },
   data: function () {
     return {
+      activeSite: "NCR",
+      activeDay: 0,
       activeVariable: "wpd",
-      weather: [
+      activeImgType: 0,
+      timestamp: Date.now(),
+      forecastData: [],
+      forecastVars: [
         {
           name: "wpd",
           units: "MW",
           title: "WIND POWER",
-          data: [
-            { name: "Ave", value: 5.4 },
-            { name: "Max", value: 8.3 },
-          ],
         },
         {
           name: "ppv",
           units: "MW",
           title: "SOLAR POWER",
-          data: [
-            { name: "Ave", value: 2.3 },
-            { name: "Max", value: 8.3 },
-          ],
         },
         {
           name: "temp",
           units: "°C",
           title: "TEMPERATURE",
-          data: [
-            { name: "Min", value: 28 },
-            { name: "Max", value: 37 },
-          ],
         },
         {
           name: "wind",
           units: "kph",
           title: "WIND SPEED",
-          data: [
-            { name: "Min", value: 3 },
-            { name: "Max", value: 14 },
-          ],
         },
         {
           name: "rainchance",
           title: "RAIN CHANCE",
-          data: [{ value: "LOW" }],
         },
       ],
     };
   },
   computed: {
-    cleanEnergyVars() {
-      return this.weather.filter(
-        ({ name }) => ["wpd", "ppv"].indexOf(name) !== -1
-      );
+    dateString() {
+      return format(this.timestamp, "d MMM yyyy");
     },
-    weatherVars() {
-      return this.weather.filter(
-        ({ name }) => ["wpd", "ppv"].indexOf(name) === -1
-      );
+    cleanEnergyData() {
+      let data = this.forecastData.filter((d) => d.name === this.activeSite);
+      if (data.length > 0) {
+        data = data[0].forecast[this.activeDay];
+        return [
+          {
+            name: "wpd",
+            units: "MW",
+            title: "WIND POWER",
+            data: [
+              { name: "Ave", value: data.wndPow },
+              { name: "Max", value: data.wndPowMax },
+            ],
+          },
+          {
+            name: "ppv",
+            units: "MW",
+            title: "SOLAR POWER",
+            data: [
+              { name: "Ave", value: data.solPow },
+              { name: "Max", value: data.solPowMax },
+            ],
+          },
+        ];
+      }
+
+      return [];
+    },
+    weatherData() {
+      let data = this.forecastData.filter((d) => d.name === this.activeSite);
+      if (data.length > 0) {
+        data = data[0].forecast[this.activeDay];
+        return [
+          {
+            name: "temp",
+            units: "°C",
+            title: "TEMPERATURE",
+            data: [
+              { name: "Min", value: data.tempMin },
+              { name: "Max", value: data.tempMax },
+            ],
+          },
+          {
+            name: "wind",
+            units: "kph",
+            title: "WIND SPEED",
+            data: [
+              { name: "Min", value: data.wspdMin },
+              { name: "Max", value: data.wspdMax },
+            ],
+          },
+          {
+            name: "rainchance",
+            title: "RAIN CHANCE",
+            data: [{ value: data.rainChance }],
+          },
+        ];
+      }
+      return [];
+    },
+    forecastImgVariants() {
+      if (["wpd", "ppv"].indexOf(this.activeVariable) !== -1)
+        return ["Ave", "Max"];
+      else if (this.activeVariable === "rainchance") return [];
+      else return ["Min", "Max"];
+    },
+    forecastImg() {
+      let imgTypes = ["min", "max"];
+      if (["wpd", "ppv"].indexOf(this.activeVariable) !== -1)
+        imgTypes = ["mean", "max"];
+      else if (this.activeVariable === "rainchance") imgTypes = "";
+
+      if (imgTypes === "")
+        return `https://panahon.observatory.ph/resources/model/web_img/wrf-${this.activeVariable}.png`;
+      return `https://panahon.observatory.ph/resources/model/web_img/wrf-${
+        this.activeVariable
+      }_${imgTypes[this.activeImgType]}.png`;
+    },
+    forecastImgCmap() {
+      return `https://panahon.observatory.ph/resources/model/web_img/cmap/wrf-${this.activeVariable}_cmap.png`;
     },
   },
   methods: {
@@ -182,6 +267,29 @@ export default {
       if (units !== "") return `${title} (${units})`;
       return title;
     },
+    async fetchForecast() {
+      try {
+        const url = "https://panahon.observatory.ph/api/forecast.php";
+        const forecastData = await axios.get(url).then(({ data }) => data);
+        this.forecastData = Object.keys(forecastData).map(
+          (k) => forecastData[k]
+        );
+        this.timestamp = new Date(this.forecastData[0].forecast[0].timestamp);
+      } catch (err) {
+        if (err.response) {
+          // client received an error response (5xx, 4xx)
+          console.log("Server Error:", err);
+        } else if (err.request) {
+          // client never received a response, or request never left
+          console.log("Network Error:", err);
+        } else {
+          console.log("Client Error:", err);
+        }
+      }
+    },
+  },
+  mounted() {
+    this.fetchForecast();
   },
 };
 </script>
