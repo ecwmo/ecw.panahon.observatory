@@ -41,7 +41,7 @@
                 >About Us</a
               >
               <a
-                href=""
+                href="#"
                 class="
                   py-4
                   px-2
@@ -54,7 +54,7 @@
                 >Acknowledgements</a
               >
               <a
-                href=""
+                href="#"
                 class="
                   py-4
                   px-2
