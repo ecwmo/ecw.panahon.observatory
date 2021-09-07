@@ -190,8 +190,8 @@ export default {
             units: "MW",
             title: "WIND POWER",
             data: [
-              { name: "Ave", value: data.wndPow },
-              { name: "Max", value: data.wndPowMax },
+              { name: "Ave", value: data.wndPow.toFixed(1) },
+              { name: "Max", value: data.wndPowMax.toFixed(1) },
             ],
           },
           {
@@ -199,8 +199,8 @@ export default {
             units: "MW",
             title: "SOLAR POWER",
             data: [
-              { name: "Ave", value: data.solPow },
-              { name: "Max", value: data.solPowMax },
+              { name: "Ave", value: data.solPow.toFixed(1) },
+              { name: "Max", value: data.solPowMax.toFixed(1) },
             ],
           },
         ];
@@ -218,8 +218,8 @@ export default {
             units: "°C",
             title: "TEMPERATURE",
             data: [
-              { name: "Min", value: data.tempMin },
-              { name: "Max", value: data.tempMax },
+              { name: "Min", value: data.tempMin.toFixed(1) },
+              { name: "Max", value: data.tempMax.toFixed(1) },
             ],
           },
           {
@@ -227,8 +227,8 @@ export default {
             units: "kph",
             title: "WIND SPEED",
             data: [
-              { name: "Min", value: data.wspdMin },
-              { name: "Max", value: data.wspdMax },
+              { name: "Min", value: data.wspdMin.toFixed(1) },
+              { name: "Max", value: data.wspdMax.toFixed(1) },
             ],
           },
           {
@@ -253,10 +253,10 @@ export default {
       else if (this.activeVariable === "rainchance") imgTypes = "";
 
       if (imgTypes === "")
-        return `https://panahon.observatory.ph/resources/model/web_img/wrf-${this.activeVariable}.png`;
+        return `https://panahon.observatory.ph/resources/model/web_img/wrf-${this.activeVariable}_latest.png`;
       return `https://panahon.observatory.ph/resources/model/web_img/wrf-${
         this.activeVariable
-      }_${imgTypes[this.activeImgType]}.png`;
+      }_${imgTypes[this.activeImgType]}_latest.png`;
     },
     forecastImgCmap() {
       return `https://panahon.observatory.ph/resources/model/web_img/cmap/wrf-${this.activeVariable}_cmap.png`;
