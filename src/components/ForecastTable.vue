@@ -58,7 +58,7 @@
 
 <script>
 export default {
-  name: "WeatherTable",
+  name: "ForecastTable",
   props: ["data"],
 };
 </script>

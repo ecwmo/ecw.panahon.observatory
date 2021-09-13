@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  name: "WeatherCard",
+  name: "ForecastCard",
   props: ["title", "data"],
 };
 </script>
