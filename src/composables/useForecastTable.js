@@ -12,7 +12,7 @@ const useForecastTable = (forecastData, activeSite) => {
           ["", `${d.solPowMax.toFixed(1)} MW`, `${d.solPow.toFixed(1)} MW`],
           [`${d.tempMin.toFixed(1)} °C`, `${d.tempMax.toFixed(1)} °C`, ""],
           [`${d.wspdMin.toFixed(1)} kph`, `${d.wspdMax.toFixed(1)} kph`, ""],
-          ["", d.rainChanceStr, ""],
+          ["", d.rainChanceStr.toUpperCase(), ""],
         ],
       }));
       return data;
