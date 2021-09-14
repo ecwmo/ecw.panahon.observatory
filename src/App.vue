@@ -161,9 +161,12 @@ export default {
 </script>
 
 <style>
-.fade-enter-active,
+.fade-enter-active {
+  transition: opacity 0.6s ease-out;
+}
+
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,
@@ -172,16 +175,11 @@ export default {
 }
 
 .slide-fade-enter-active {
-  transition: all 1.2s ease-out;
+  transition: all 0.8s ease-out;
 }
 
-.slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateY(20px);
+.slide-fade-enter-from {
+  transform: translateY(30px);
   opacity: 0;
 }
 </style>
