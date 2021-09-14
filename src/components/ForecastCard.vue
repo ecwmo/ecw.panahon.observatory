@@ -9,7 +9,7 @@
         v-bind:key="d.name"
       >
         <div class="text-sm pb-1">{{ d.name }}</div>
-        <div class="text-5xl font-bold">{{ d.value }}</div>
+        <div class="text-4xl font-bold uppercase">{{ d.value }}</div>
       </div>
     </div>
   </a>
