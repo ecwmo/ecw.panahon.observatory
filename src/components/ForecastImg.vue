@@ -11,11 +11,15 @@ import useForecastImg from "@/composables/useForecastImg";
 
 export default {
   name: "ForecastImg",
-  props: ["varName", "imgType"],
+  props: ["varName", "day", "imgType"],
   setup(props) {
-    const { varName, imgType } = toRefs(props);
+    const { varName, day, imgType } = toRefs(props);
 
-    const { forecastImg, forecastImgCmap } = useForecastImg(varName, imgType);
+    const { forecastImg, forecastImgCmap } = useForecastImg(
+      varName,
+      day,
+      imgType
+    );
 
     return {
       forecastImg,

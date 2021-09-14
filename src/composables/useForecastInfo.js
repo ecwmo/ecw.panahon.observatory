@@ -56,7 +56,7 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
         {
           name: "rainchance",
           title: "RAIN CHANCE",
-          data: [{ value: data.rainChance }],
+          data: [{ value: data.rainChanceStr }],
         },
       ];
     }

@@ -20,6 +20,7 @@
         <transition name="fade">
           <ForecastImg
             :varName="activeVariable"
+            :day="activeDay"
             :imgType="activeImgType"
             v-show="activeDay <= 1"
           />

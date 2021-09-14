@@ -44,12 +44,9 @@ export default {
   props: ["forecastVars", "activeVariable", "activeImgType"],
   emits: ["setActiveVariable", "setActiveImgType"],
   setup(props) {
-    const { activeVariable, activeImgType } = toRefs(props);
+    const { activeVariable } = toRefs(props);
 
-    const { forecastImgVariants } = useForecastImg(
-      activeVariable,
-      activeImgType
-    );
+    const { forecastImgVariants } = useForecastImg(activeVariable);
 
     return {
       forecastImgVariants,
