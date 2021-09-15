@@ -81,7 +81,7 @@
     <transition name="slide-fade">
       <div class="w-full flex justify-center pt-12" v-show="activeDay > 1">
         <!-- Table -->
-        <ForecastTable :data="forecastTableData" />
+        <ForecastTable :data="forecastData" :site="activeSite" />
       </div>
     </transition>
   </div>
@@ -98,7 +98,6 @@ import ForecastCards from "@/components/ForecastCards.vue";
 import ForecastTable from "@/components/ForecastTable.vue";
 
 import useForecastData from "@/composables/useForecastData";
-import useForecastTable from "@/composables/useForecastTable";
 
 export default {
   name: "App",
@@ -144,8 +143,6 @@ export default {
 
     const { forecastData, forecastDateStr } = useForecastData();
 
-    const { forecastTableData } = useForecastTable(forecastData, activeSite);
-
     return {
       activeSite,
       activeDay,
@@ -154,7 +151,6 @@ export default {
       forecastVars,
       forecastData,
       forecastDateStr,
-      forecastTableData,
     };
   },
 };

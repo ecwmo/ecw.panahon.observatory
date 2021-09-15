@@ -2,7 +2,9 @@
   <table class="text-xs">
     <tr class="text-lg uppercase">
       <th></th>
-      <th v-for="(dat, idx) in data" :key="idx" class="p-3">{{ dat.title }}</th>
+      <th v-for="(dat, idx) in forecastTableData" :key="idx" class="p-3">
+        {{ dat.title }}
+      </th>
     </tr>
     <tr>
       <td>
@@ -27,7 +29,7 @@
           </tr>
         </table>
       </td>
-      <td v-for="(dat, idx) in data" :key="idx">
+      <td v-for="(dat, idx) in forecastTableData" :key="idx">
         <table class="text-center">
           <tr class="bg-black">
             <th class="py-2 px-3">MIN</th>
@@ -57,8 +59,18 @@
 </template>
 
 <script>
+import { toRefs } from "vue";
+import useForecastTable from "@/composables/useForecastTable";
+
 export default {
   name: "ForecastTable",
-  props: ["data"],
+  props: ["data", "site"],
+  setup(props) {
+    const { data, site } = toRefs(props);
+
+    const { forecastTableData } = useForecastTable(data, site);
+
+    return { forecastTableData };
+  },
 };
 </script>
