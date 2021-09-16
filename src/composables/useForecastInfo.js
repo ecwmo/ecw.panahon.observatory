@@ -1,4 +1,9 @@
 import { computed } from "vue";
+import turbineIcon from "@/assets/icons/wind-turbine.png";
+import sunIcon from "@/assets/icons/sun.png";
+import thermometerIcon from "@/assets/icons/thermometer.png";
+import windIcon from "@/assets/icons/wind.png";
+import rainCloudIcon from "@/assets/icons/rain-cloud.png";
 
 const useForecastInfo = (forecastData, activeSite, activeDay) => {
   const cleanEnergyData = computed(() => {
@@ -14,6 +19,7 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
             { name: "Ave", value: data.wndPow.toFixed(1) },
             { name: "Max", value: data.wndPowMax.toFixed(1) },
           ],
+          icon: turbineIcon,
         },
         {
           name: "ppv",
@@ -23,6 +29,7 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
             { name: "Ave", value: data.solPow.toFixed(1) },
             { name: "Max", value: data.solPowMax.toFixed(1) },
           ],
+          icon: sunIcon,
         },
       ];
     }
@@ -43,6 +50,7 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
             { name: "Min", value: data.tempMin.toFixed(1) },
             { name: "Max", value: data.tempMax.toFixed(1) },
           ],
+          icon: thermometerIcon,
         },
         {
           name: "wind",
@@ -52,11 +60,13 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
             { name: "Min", value: data.wspdMin.toFixed(1) },
             { name: "Max", value: data.wspdMax.toFixed(1) },
           ],
+          icon: windIcon,
         },
         {
           name: "rainchance",
           title: "RAIN CHANCE",
           data: [{ value: data.rainChanceStr }],
+          icon: rainCloudIcon,
         },
       ];
     }
