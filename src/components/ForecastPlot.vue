@@ -66,8 +66,7 @@
           :transform="`translate(${xScale(i)},${yScale(d)})`"
           text-anchor="middle"
         >
-          <circle :fill="dotColor" stroke="none" r="2.4"></circle>
-          <text y="-8" :fill="dotColor" stroke="none">{{ valueText(d) }}</text>
+          <text y="-4" :fill="dotColor" stroke="none">{{ valueText(d) }}</text>
         </g>
       </g>
     </svg>
