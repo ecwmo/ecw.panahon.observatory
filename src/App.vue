@@ -79,9 +79,13 @@
       </div>
     </div>
     <transition name="slide-fade">
-      <div class="w-full flex justify-center pt-12" v-show="activeDay > 1">
-        <!-- Table -->
-        <ForecastTable :data="forecastData" :site="activeSite" />
+      <div class="w-full flex justify-center pt-8" v-show="activeDay > 1">
+        <div class="flex flex-col items-center">
+          <!-- Graph -->
+          <ForecastPlot :data="forecastData" :site="activeSite" />
+          <!-- Table -->
+          <ForecastTable :data="forecastData" :site="activeSite" />
+        </div>
       </div>
     </transition>
   </div>
@@ -96,6 +100,7 @@ import ForecastImg from "@/components/ForecastImg.vue";
 import SiteDropDown from "@/components/SiteDropDown.vue";
 import ForecastCards from "@/components/ForecastCards.vue";
 import ForecastTable from "@/components/ForecastTable.vue";
+import ForecastPlot from "@/components/ForecastPlot.vue";
 
 import useForecastData from "@/composables/useForecastData";
 
@@ -108,6 +113,7 @@ export default {
     SiteDropDown,
     ForecastCards,
     ForecastTable,
+    ForecastPlot,
   },
   setup() {
     const forecastVars = [
