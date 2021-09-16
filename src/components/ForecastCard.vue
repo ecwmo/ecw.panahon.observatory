@@ -1,5 +1,5 @@
 <template>
-  <a href="#" class="flex items-center p-4" style="width: 16rem">
+  <a href="#" class="flex items-center p-4" style="width: 16rem" @click.prevent>
     <div class="w-1/4 flex justify-center">
       <img :src="icon" class="w-14" />
     </div>

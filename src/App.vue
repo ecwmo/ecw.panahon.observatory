@@ -40,7 +40,7 @@
             <a
               class="py-2 px-4 text-center"
               href="#"
-              @click="activeDay = 0"
+              @click.prevent="activeDay = 0"
               :class="[
                 activeDay === 0 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
               ]"
@@ -49,7 +49,7 @@
             <a
               class="py-2 px-4 text-center"
               href="#"
-              @click="activeDay = 1"
+              @click.prevent="activeDay = 1"
               :class="[
                 activeDay === 1 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
               ]"
@@ -58,7 +58,7 @@
             <a
               class="py-2 px-4 text-center"
               href="#"
-              @click="activeDay = 4"
+              @click.prevent="activeDay = 4"
               :class="[
                 activeDay === 4 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
               ]"

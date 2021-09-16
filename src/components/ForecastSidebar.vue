@@ -7,7 +7,7 @@
         href="#"
         v-for="(v, idx) in forecastImgVariants"
         :key="v"
-        @click="$emit('setActiveImgType', idx)"
+        @click.prevent="$emit('setActiveImgType', idx)"
         :class="[
           activeImgType === idx
             ? 'text-gray-900 bg-gray-200 font-bold'
@@ -22,7 +22,7 @@
         href="#"
         v-for="v in forecastVars"
         :key="v.name"
-        @click="$emit('setActiveVariable', v.name)"
+        @click.prevent="$emit('setActiveVariable', v.name)"
         :class="[
           activeVariable === v.name
             ? 'text-gray-900 bg-gray-200 font-bold'
