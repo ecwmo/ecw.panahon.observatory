@@ -56,6 +56,18 @@
             stroke-width="0.05em"
           ></path>
           <text
+            v-if="i === yAxisTicks.length - 1"
+            :x="margin.left"
+            y="-6"
+            text-anchor="start"
+            alignment-baseline="top"
+            fill="currentColor"
+            stroke="none"
+            class="yAxisUnit"
+          >
+            {{ varUnit }}
+          </text>
+          <text
             :x="margin.left - 6"
             text-anchor="end"
             alignment-baseline="middle"
@@ -185,7 +197,7 @@ export default {
       type: Number,
     },
     height: {
-      default: screen.width * 0.25,
+      default: screen.width * 0.2,
       type: Number,
     },
   },
@@ -368,11 +380,19 @@ export default {
 
     const valueIsValid = (d) => !isNaN(d.value) && d.value !== null;
 
-    const valueText = (d, withUnits = false) => {
+    const varUnit = computed(() => {
       const { units } = forecastVars.find(
         (f) => f.name === activeVariable.value
       );
 
+      if (activeVariable.value === "rain") {
+        return "%";
+      }
+
+      return units;
+    });
+
+    const valueText = (d, withUnits = false) => {
       if (d === null) return d;
 
       if (!withUnits) return activeVariable.value !== "rain" ? d : d * 100;
@@ -383,7 +403,7 @@ export default {
         return `${(d * 100).toFixed(0)} %`;
       }
 
-      return `${d.toFixed(1)} ${units}`;
+      return `${d.toFixed(1)} ${varUnit.value}`;
     };
 
     const valueTextColor = computed(() => {
@@ -493,6 +513,7 @@ export default {
       valueTextColor,
       dateText,
       valueText,
+      varUnit,
       handleMouseMove,
       handleMouseEnter,
       handleMouseLeave,
@@ -519,4 +540,6 @@ svg
   font-size: 1.4rem
 .yAxisText
   font-size: 1rem
+.yAxisUnit
+  font-size: 0.8rem
 </style>
