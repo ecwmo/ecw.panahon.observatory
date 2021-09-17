@@ -30,18 +30,14 @@
       >
         <path stroke="currentColor" :d="xAxisPath"></path>
         <g
-          v-for="(d, i) in plotData"
+          v-for="(xAxisTick, i) in xAxisTicks"
           :key="i"
-          :transform="xAxisTickTransform(d, i)"
+          :transform="xAxisTickTransform(xAxisTick)"
         >
-          <template v-if="i % 6 === 0">
-            <line stroke="currentColor" y2="6"></line>
-            <template v-if="i % 24 === 0">
-              <text fill="currentColor" y="9" dy="0.71em" class="xAxisText">
-                {{ dateText(d.timestamp) }}
-              </text>
-            </template>
-          </template>
+          <line stroke="currentColor" y2="6"></line>
+          <text fill="currentColor" y="9" dy="0.71em" class="xAxisText">
+            {{ dateText(xAxisTick) }}
+          </text>
         </g>
       </g>
       <!-- y-axis -->
@@ -189,7 +185,7 @@ export default {
       type: Number,
     },
     height: {
-      default: screen.width * 0.2,
+      default: screen.width * 0.25,
       type: Number,
     },
   },
@@ -343,12 +339,22 @@ export default {
       () => `M${xScale.value(minXVal.value)},0H${xScale.value(maxXVal.value)}`
     );
 
-    const xAxisTickTransform = (d, i) => {
+    const xAxisTickTransform = (d) => {
       if (activeVariable.value === "rain") {
-        return `translate(${xScale.value(i)},0)`;
+        const idx = plotData.value.findIndex((_d) => _d.timestamp === d);
+        return `translate(${xScale.value(idx)},0)`;
       }
-      return `translate(${xScale.value(d.timestamp)},0)`;
+      return `translate(${xScale.value(d)},0)`;
     };
+
+    const xAxisTicks = computed(() => {
+      if (activeVariable.value === "rain") {
+        return plotData.value
+          .map((d) => d.timestamp)
+          .filter((d) => d.getHours() === 0);
+      }
+      return xScale.value.ticks(d3.timeDay.every(1));
+    });
 
     const yAxisTicks = computed(() => yScale.value.ticks(4));
 
@@ -478,6 +484,7 @@ export default {
       yScale,
       xAxisPath,
       xAxisTickTransform,
+      xAxisTicks,
       yAxisTicks,
       areaPlot,
       linePlot,
