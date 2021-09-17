@@ -31,7 +31,10 @@
         <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
         <span class="text-3xl mb-3">Clean Power | Weather Forecast</span>
         <div>
-          <SiteDropDown :forecastData="forecastData" v-model="activeSite" />
+          <SiteDropDown
+            :forecastData="forecastDailyData"
+            v-model="activeSite"
+          />
         </div>
         <div class="w-full">
           <nav
@@ -68,7 +71,7 @@
         </div>
         <transition name="fade">
           <ForecastCards
-            :forecastData="forecastData"
+            :forecastData="forecastDailyData"
             :activeSite="activeSite"
             :activeDay="activeDay"
             :activeVariable="activeVariable"
@@ -80,11 +83,11 @@
     </div>
     <transition name="slide-fade">
       <div class="w-full flex justify-center pt-8" v-show="activeDay > 1">
-        <div class="flex flex-col items-center">
+        <div class="w-full flex flex-col items-center">
           <!-- Graph -->
-          <ForecastPlot :data="forecastData" :site="activeSite" />
-          <!-- Table -->
-          <ForecastTable :data="forecastData" :site="activeSite" />
+          <ForecastPlot :data="forecastHourlyData" :site="activeSite" />
+          <!-- Table
+          <ForecastTable :data="forecastDailyData" :site="activeSite" /> -->
         </div>
       </div>
     </transition>
@@ -99,7 +102,7 @@ import ForecastSidebar from "@/components/ForecastSidebar.vue";
 import ForecastImg from "@/components/ForecastImg.vue";
 import SiteDropDown from "@/components/SiteDropDown.vue";
 import ForecastCards from "@/components/ForecastCards.vue";
-import ForecastTable from "@/components/ForecastTable.vue";
+// import ForecastTable from "@/components/ForecastTable.vue";
 import ForecastPlot from "@/components/ForecastPlot.vue";
 
 import useForecastData from "@/composables/useForecastData";
@@ -112,7 +115,6 @@ export default {
     ForecastImg,
     SiteDropDown,
     ForecastCards,
-    ForecastTable,
     ForecastPlot,
   },
   setup() {
@@ -147,7 +149,8 @@ export default {
     const activeVariable = ref("wpd");
     const activeImgType = ref(0);
 
-    const { forecastData, forecastDateStr } = useForecastData();
+    const { forecastDailyData, forecastHourlyData, forecastDateStr } =
+      useForecastData();
 
     return {
       activeSite,
@@ -155,7 +158,8 @@ export default {
       activeVariable,
       activeImgType,
       forecastVars,
-      forecastData,
+      forecastDailyData,
+      forecastHourlyData,
       forecastDateStr,
     };
   },

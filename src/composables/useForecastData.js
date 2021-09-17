@@ -3,18 +3,30 @@ import { format } from "date-fns";
 import axios from "axios";
 
 const useForecastData = () => {
-  const forecastData = ref([]);
+  const forecastHourlyData = ref([]);
+  const forecastDailyData = ref([]);
   const forecastTimestamp = ref(Date.now());
 
   const fetchForecast = async () => {
     try {
       const url = "https://panahon.observatory.ph/api/forecast.php";
       const _forecastData = await axios.get(url).then(({ data }) => data);
-      forecastData.value = Object.keys(_forecastData).map(
-        (k) => _forecastData[k]
-      );
+      forecastDailyData.value = Object.keys(_forecastData).map((k) => {
+        const {
+          forecast: { day },
+        } = _forecastData[k];
+
+        return { ..._forecastData[k], forecast: day };
+      });
+      forecastHourlyData.value = Object.keys(_forecastData).map((k) => {
+        const {
+          forecast: { hr },
+        } = _forecastData[k];
+
+        return { ..._forecastData[k], forecast: hr };
+      });
       forecastTimestamp.value = new Date(
-        forecastData.value[0].forecast[0].timestamp
+        forecastDailyData.value[0].forecast[0].timestamp
       );
     } catch (err) {
       if (err.response) {
@@ -36,7 +48,8 @@ const useForecastData = () => {
   );
 
   return {
-    forecastData,
+    forecastHourlyData,
+    forecastDailyData,
     forecastTimestamp,
     forecastDateStr,
   };

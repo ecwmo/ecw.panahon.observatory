@@ -23,50 +23,73 @@
       >
         <path stroke="currentColor" :d="xAxisPath"></path>
         <g
-          v-for="(d, i) in plotData.dates"
+          v-for="(d, i) in plotData"
           :key="i"
           opacity="1"
-          :transform="`translate(${xScale(i)},0)`"
+          :transform="xAxisTickTransform(d, i)"
         >
-          <line stroke="currentColor" y2="6"></line>
-          <text fill="currentColor" y="9" dy="0.71em">{{ dateText(d) }}</text>
+          <template v-if="i % 6 === 0">
+            <line stroke="currentColor" y2="6"></line>
+            <text fill="currentColor" y="9" dy="0.71em">
+              {{ dateText(d.timestamp) }}
+            </text>
+          </template>
         </g>
       </g>
       <g v-if="activeVariable !== 'rain'">
         <path :d="areaPlot" stroke="none" :fill="fill" opacity="0.5" />
         <path :d="linePlot" :stroke="stroke" fill="none" />
-        <g
-          v-for="(d, i) in plotData.values"
-          :key="i"
-          :transform="`translate(${xScale(i)},${yScale(d)})`"
-          text-anchor="middle"
-        >
-          <circle :fill="dotColor" stroke="none" r="2.4"></circle>
-          <text y="-8" :fill="dotColor" stroke="none">{{ valueText(d) }}</text>
-        </g>
+        <template v-for="(d, i) in plotData">
+          <template v-if="!isNaN(d.value) && d.value !== null">
+            <g
+              :key="i"
+              :transform="`translate(${xScale(d.timestamp)},${yScale(
+                d.value
+              )})`"
+              text-anchor="middle"
+            >
+              <template v-if="i % 6 === 0">
+                <circle :fill="dotColor" stroke="none" r="0.4rem"></circle>
+                <text
+                  y="-1rem"
+                  :fill="dotColor"
+                  stroke="none"
+                  class="valueText"
+                >
+                  {{ valueText(d.value) }}
+                </text>
+              </template>
+            </g>
+          </template>
+        </template>
       </g>
       <g v-else>
         <g
-          v-for="(d, i) in plotData.values"
+          v-for="(d, i) in plotData"
           :key="i"
           :transform="`translate(${-xScale.bandwidth() / 2},0)`"
         >
           <rect
             :fill="fill"
             :stroke="stroke"
+            opacity="0.5"
             :width="xScale.bandwidth()"
-            :height="height - margin.bottom - yScale(d)"
+            :height="height - margin.bottom - yScale(d.value)"
             :x="xScale(i)"
-            :y="yScale(d)"
+            :y="yScale(d.value)"
           ></rect>
         </g>
         <g
-          v-for="(d, i) in plotData.values"
+          v-for="(d, i) in plotData"
           :key="i"
-          :transform="`translate(${xScale(i)},${yScale(d)})`"
+          :transform="`translate(${xScale(i)},${yScale(1)})`"
           text-anchor="middle"
         >
-          <text y="-4" :fill="dotColor" stroke="none">{{ valueText(d) }}</text>
+          <template v-if="i % 6 === 0">
+            <text y="-4" :fill="dotColor" stroke="none" class="valueText">
+              {{ valueText(d.value) }}
+            </text>
+          </template>
         </g>
       </g>
     </svg>
@@ -90,11 +113,11 @@ export default {
       required: true,
     },
     width: {
-      default: 400,
+      default: screen.width,
       type: Number,
     },
     height: {
-      default: 100,
+      default: screen.width * 0.2,
       type: Number,
     },
   },
@@ -143,30 +166,18 @@ export default {
       },
     ];
 
-    const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+    const margin = { top: 40, right: 30, bottom: 30, left: 40 };
     const { data, site, width, height } = toRefs(props);
 
     const { forecastPlotData } = useForecastPlot(data, site);
 
-    const isEmpty = (obj) => {
-      for (var key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) return false;
-      }
-      return true;
-    };
-
     const plotData = computed(() => {
-      if (!isEmpty(forecastPlotData.value)) {
-        const { dates, values } = forecastPlotData.value;
-        return {
-          dates: dates,
-          values: values[activeVariable.value],
-        };
-      }
-      return {
-        dates: [],
-        values: [],
-      };
+      if (forecastPlotData.value.length > 0)
+        return forecastPlotData.value.map((d) => ({
+          timestamp: d.timestamp,
+          value: d[activeVariable.value],
+        }));
+      return forecastPlotData.value;
     });
 
     const rangeX = computed(() => [margin.left, width.value - margin.right]);
@@ -175,22 +186,24 @@ export default {
     const minVal = computed(() => {
       if (activeVariable.value === "rain") return 0;
 
-      const _minVal = Math.min(...plotData.value.values);
+      const _minVal = Math.min(...plotData.value.map((d) => d.value));
       const minVal = _minVal * 0.95;
 
       return minVal;
     });
 
-    const maxVal = computed(() => Math.max(...plotData.value.values));
+    const maxVal = computed(() =>
+      Math.max(...plotData.value.map((d) => d.value))
+    );
 
     const xScale = computed(() => {
-      const x = plotData.value.dates.map((d, i) => i);
+      const x = plotData.value.map((d, i) => i);
       if (activeVariable.value === "rain")
-        return d3.scaleBand().range(rangeX.value).padding(0.3).domain(x);
+        return d3.scaleBand().range(rangeX.value).padding(0.2).domain(x);
       return d3
-        .scaleLinear()
+        .scaleTime()
         .range(rangeX.value)
-        .domain([0, x.length - 1]);
+        .domain(d3.extent(plotData.value, (d) => d.timestamp));
     });
 
     const yScale = computed(() =>
@@ -200,20 +213,26 @@ export default {
     const areaPlot = computed(() => {
       d3.axisLeft().scale(xScale.value);
       d3.axisTop().scale(yScale.value);
-      return d3
+      const area = d3
         .area()
-        .x((d, i) => xScale.value(i))
+        .defined((d) => !isNaN(d.value) && d.value !== null)
+        .x((d) => xScale.value(d.timestamp))
         .y0(yScale.value(minVal.value))
-        .y1((d) => yScale.value(d))(plotData.value.values);
+        .y1((d) => yScale.value(d.value));
+
+      return area(plotData.value.filter(area.defined()));
     });
 
     const linePlot = computed(() => {
       d3.axisLeft().scale(xScale.value);
       d3.axisTop().scale(yScale.value);
-      return d3
+      const line = d3
         .line()
-        .x((d, i) => xScale.value(i))
-        .y((d) => yScale.value(d))(plotData.value.values);
+        .defined((d) => !isNaN(d.value) && d.value !== null)
+        .x((d) => xScale.value(d.timestamp))
+        .y((d) => yScale.value(d.value));
+
+      return line(plotData.value.filter(line.defined()));
     });
 
     const viewBox = computed(() => `0 0 ${width.value} ${height.value}`);
@@ -235,11 +254,18 @@ export default {
     });
 
     const xAxisPath = computed(() => {
-      const n = plotData.value.dates.length;
+      const n = plotData.value.length;
       const s = xScale.value(0);
       const e = xScale.value(n - 1);
       return `M${s},0H${e}`;
     });
+
+    const xAxisTickTransform = (d, i) => {
+      if (activeVariable.value === "rain") {
+        return `translate(${xScale.value(i)},0)`;
+      }
+      return `translate(${xScale.value(d.timestamp)},0)`;
+    };
 
     const dotColor = computed(() => {
       const { dotColor } = forecastVars.find(
@@ -254,16 +280,17 @@ export default {
         (f) => f.name === activeVariable.value
       );
 
+      if (d === null) return d;
+
       if (activeVariable.value === "rain") {
-        const val = (d * 100).toFixed(0);
-        return `${val} %`;
+        if (d < 0.01) return null;
+        return `${(d * 100).toFixed(0)} %`;
       }
 
-      if (units === undefined) return d;
-      return `${d} ${units}`;
+      return `${d.toFixed(1)} ${units}`;
     };
 
-    const dateText = (d) => format(d, "eee");
+    const dateText = (d) => format(d, "hbbb eee");
 
     return {
       margin,
@@ -272,6 +299,7 @@ export default {
       xScale,
       yScale,
       xAxisPath,
+      xAxisTickTransform,
       areaPlot,
       linePlot,
       viewBox,
@@ -288,7 +316,9 @@ export default {
 
 <style lang="sass" scoped>
 svg
-  font-size: 0.4rem
-path
-  stroke-width: 1px
+  font-size: 0.8rem
+  stroke-width: 2px
+.valueText
+  font-size: 1rem
+  text-shadow: 0 0 0.3em black
 </style>
