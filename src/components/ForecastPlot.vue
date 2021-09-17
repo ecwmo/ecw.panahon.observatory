@@ -16,7 +16,12 @@
       >
     </nav>
     <!-- plot area -->
-    <svg :viewBox="viewBox">
+    <svg
+      :viewBox="viewBox"
+      @mousemove.prevent.stop="handleMouseMove"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
+    >
       <!-- x-axis -->
       <g
         :transform="`translate(0,${height - margin.bottom})`"
@@ -69,7 +74,7 @@
       <!-- default plot -->
       <g v-if="activeVariable !== 'rain'">
         <path :d="areaPlot" stroke="none" :fill="fill" fill-opacity="0.2" />
-        <path :d="linePlot" :stroke="stroke" fill="none" />
+        <path :d="linePlot" :stroke="stroke" fill="none" id="linePlot" />
         <!-- labels -->
         <template v-for="(d, i) in plotData">
           <template v-if="valueIsValid(d)">
@@ -78,7 +83,7 @@
               :transform="`translate(${xScale(d.timestamp)},${yScale(
                 d.value
               )})`"
-              text-anchor="middle"
+              class="valueLabels"
             >
               <template v-if="i % 12 === 0">
                 <circle :fill="dotColor" stroke="none" r="0.4rem"></circle>
@@ -87,6 +92,7 @@
                   y="-1rem"
                   :fill="valueTextColor"
                   stroke="none"
+                  text-anchor="middle"
                   class="valueText"
                 >
                   {{ valueText(d.value, true) }}
@@ -98,27 +104,65 @@
       </g>
       <!-- histogram -->
       <g v-else>
-        <template v-for="(d, i) in plotData" :key="i">
-          <g :transform="`translate(${-xScale.bandwidth() / 2},0)`">
-            <rect
-              fill="none"
-              :stroke="stroke"
-              :width="xScale.bandwidth()"
-              :height="height - margin.bottom - yScale(d.value)"
-              :x="xScale(i)"
-              :y="yScale(d.value)"
-            ></rect>
-            <rect
-              :fill="fill"
-              stroke="none"
-              fill-opacity="0.2"
-              :width="xScale.bandwidth()"
-              :height="height - margin.bottom - yScale(d.value)"
-              :x="xScale(i)"
-              :y="yScale(d.value)"
-            ></rect>
-          </g>
-        </template>
+        <g
+          v-for="(d, i) in plotData"
+          :key="i"
+          :transform="`translate(${-xScale.bandwidth() / 2},0)`"
+          :data-index="i"
+          class="bar"
+          @mouseenter="handleBarMouseEnter"
+          @mouseleave="handleBarMouseLeave"
+        >
+          <rect
+            :fill="fill"
+            stroke="none"
+            fill-opacity="0"
+            :width="xScale.bandwidth()"
+            :height="height - margin.bottom"
+            :x="xScale(i)"
+            :y="0"
+          ></rect>
+          <rect
+            fill="none"
+            :stroke="stroke"
+            :width="xScale.bandwidth()"
+            :height="height - margin.bottom - yScale(d.value)"
+            :x="xScale(i)"
+            :y="yScale(d.value)"
+          ></rect>
+          <rect
+            :fill="fill"
+            stroke="none"
+            fill-opacity="0.2"
+            :width="xScale.bandwidth()"
+            :height="height - margin.bottom - yScale(d.value)"
+            :x="xScale(i)"
+            :y="yScale(d.value)"
+          ></rect>
+        </g>
+      </g>
+      <!-- tooltip -->
+      <g id="tooltip" display="none">
+        <circle
+          v-if="activeVariable !== 'rain'"
+          :fill="dotColor"
+          stroke="none"
+          r="0.4rem"
+        ></circle>
+        <text
+          y="-0.6rem"
+          :fill="valueTextColor"
+          stroke="none"
+          class="valueText"
+          text-anchor="middle"
+        ></text>
+        <text
+          y="-1.8rem"
+          fill="#ddd"
+          stroke="none"
+          class="dateText"
+          text-anchor="middle"
+        ></text>
       </g>
     </svg>
   </div>
@@ -346,6 +390,82 @@ export default {
 
     const dateText = (d, strFormat = "eee") => format(d, strFormat);
 
+    const handleMouseMove = (ev) => {
+      if (activeVariable.value !== "rain") {
+        const tooltip = d3.select("#tooltip");
+
+        const values = plotData.value.map((d) => d.value);
+        const dates = plotData.value.map((d) => d.timestamp);
+
+        const pointer = d3.pointer(ev);
+        const xm = xScale.value.invert(pointer[0]);
+
+        const i = d3.bisectCenter(dates, xm);
+
+        if (valueIsValid(plotData.value[i])) {
+          tooltip.attr(
+            "transform",
+            `translate(${xScale.value(dates[i])},${yScale.value(values[i])})`
+          );
+          tooltip.select("text").text(valueText(values[i], true));
+          tooltip
+            .select("text:last-of-type")
+            .text(dateText(dates[i], "MMM d, haaa"));
+        }
+      }
+    };
+
+    const handleMouseEnter = () => {
+      const tooltip = d3.select("#tooltip");
+      const valueLabels = d3.selectAll(".valueLabels");
+      const linePlot = d3.select("#linePlot");
+
+      linePlot.attr("stroke-opacity", "0.5").attr("fill-opacity", "0.1");
+      valueLabels.attr("display", "none");
+      tooltip.attr("display", null);
+    };
+
+    const handleMouseLeave = () => {
+      const tooltip = d3.select("#tooltip");
+      const valueLabels = d3.selectAll(".valueLabels");
+      const linePlot = d3.select("#linePlot");
+
+      linePlot.attr("stroke-opacity", null).attr("fill-opacity", "0.25");
+      tooltip.attr("display", "none");
+      valueLabels.attr("display", null);
+    };
+
+    const handleBarMouseEnter = (ev) => {
+      const bar = d3.select(ev.target);
+      const x = bar.select("rect").attr("x");
+
+      const tooltip = d3.select("#tooltip");
+      const valueLabels = d3.selectAll(".valueLabels");
+
+      const i = ev.target.dataset["index"];
+
+      tooltip
+        .attr("display", null)
+        .attr("transform", `translate(${x},${rangeY.value[1]})`);
+      tooltip.select("text").text(valueText(plotData.value[i].value, true));
+      tooltip
+        .select("text:last-of-type")
+        .text(dateText(plotData.value[i].timestamp, "MMM d, haaa"));
+
+      bar.attr("stroke-width", "5px").attr("fill-opacity", "0.1");
+      valueLabels.attr("display", "none");
+    };
+
+    const handleBarMouseLeave = (ev) => {
+      const tooltip = d3.select("#tooltip");
+      const valueLabels = d3.selectAll(".valueLabels");
+      const bar = d3.select(ev.target);
+
+      bar.attr("stroke-width", "2px").attr("fill-opacity", "0.25");
+      tooltip.attr("display", "none");
+      valueLabels.attr("display", null);
+    };
+
     return {
       margin,
       viewBox,
@@ -366,6 +486,11 @@ export default {
       valueTextColor,
       dateText,
       valueText,
+      handleMouseMove,
+      handleMouseEnter,
+      handleMouseLeave,
+      handleBarMouseEnter,
+      handleBarMouseLeave,
     };
   },
 };
@@ -375,6 +500,11 @@ export default {
 svg
   font-size: 0.8rem
   stroke-width: 2px
+#tooltip
+  .valueText
+    font-size: 1rem
+  .dateText
+    font-size: 0.8rem
 .valueText
   font-size: 1rem
   text-shadow: 0 0 0.6em #222
