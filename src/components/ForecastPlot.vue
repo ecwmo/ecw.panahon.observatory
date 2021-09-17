@@ -15,7 +15,9 @@
         >{{ v.title }}</a
       >
     </nav>
+    <!-- plot area -->
     <svg :viewBox="viewBox">
+      <!-- x-axis -->
       <g
         :transform="`translate(0,${height - margin.bottom})`"
         fill="none"
@@ -25,22 +27,52 @@
         <g
           v-for="(d, i) in plotData"
           :key="i"
-          opacity="1"
           :transform="xAxisTickTransform(d, i)"
         >
           <template v-if="i % 6 === 0">
             <line stroke="currentColor" y2="6"></line>
-            <text fill="currentColor" y="9" dy="0.71em">
-              {{ dateText(d.timestamp) }}
-            </text>
+            <template v-if="i % 24 === 0">
+              <text fill="currentColor" y="9" dy="0.71em" class="xAxisText">
+                {{ dateText(d.timestamp) }}
+              </text>
+            </template>
           </template>
         </g>
       </g>
+      <!-- y-axis -->
+      <g>
+        <g
+          v-for="(yAxisTick, i) in yAxisTicks"
+          :key="i"
+          :transform="`translate(0,${yScale(yAxisTick)})`"
+          fill="none"
+          text-anchor="middle"
+        >
+          <path
+            stroke="currentColor"
+            :d="xAxisPath"
+            stroke-dasharray="3,3"
+            stroke-width="0.05em"
+          ></path>
+          <text
+            :x="margin.left - 6"
+            text-anchor="end"
+            alignment-baseline="middle"
+            fill="currentColor"
+            stroke="none"
+            class="yAxisText"
+          >
+            {{ valueText(yAxisTick) }}
+          </text>
+        </g>
+      </g>
+      <!-- default plot -->
       <g v-if="activeVariable !== 'rain'">
-        <path :d="areaPlot" stroke="none" :fill="fill" opacity="0.5" />
+        <path :d="areaPlot" stroke="none" :fill="fill" fill-opacity="0.2" />
         <path :d="linePlot" :stroke="stroke" fill="none" />
+        <!-- labels -->
         <template v-for="(d, i) in plotData">
-          <template v-if="!isNaN(d.value) && d.value !== null">
+          <template v-if="valueIsValid(d)">
             <g
               :key="i"
               :transform="`translate(${xScale(d.timestamp)},${yScale(
@@ -48,49 +80,45 @@
               )})`"
               text-anchor="middle"
             >
-              <template v-if="i % 6 === 0">
+              <template v-if="i % 12 === 0">
                 <circle :fill="dotColor" stroke="none" r="0.4rem"></circle>
                 <text
+                  v-if="i !== 0"
                   y="-1rem"
-                  :fill="dotColor"
+                  :fill="valueTextColor"
                   stroke="none"
                   class="valueText"
                 >
-                  {{ valueText(d.value) }}
+                  {{ valueText(d.value, true) }}
                 </text>
               </template>
             </g>
           </template>
         </template>
       </g>
+      <!-- histogram -->
       <g v-else>
-        <g
-          v-for="(d, i) in plotData"
-          :key="i"
-          :transform="`translate(${-xScale.bandwidth() / 2},0)`"
-        >
-          <rect
-            :fill="fill"
-            :stroke="stroke"
-            opacity="0.5"
-            :width="xScale.bandwidth()"
-            :height="height - margin.bottom - yScale(d.value)"
-            :x="xScale(i)"
-            :y="yScale(d.value)"
-          ></rect>
-        </g>
-        <g
-          v-for="(d, i) in plotData"
-          :key="i"
-          :transform="`translate(${xScale(i)},${yScale(1)})`"
-          text-anchor="middle"
-        >
-          <template v-if="i % 6 === 0">
-            <text y="-4" :fill="dotColor" stroke="none" class="valueText">
-              {{ valueText(d.value) }}
-            </text>
-          </template>
-        </g>
+        <template v-for="(d, i) in plotData" :key="i">
+          <g :transform="`translate(${-xScale.bandwidth() / 2},0)`">
+            <rect
+              fill="none"
+              :stroke="stroke"
+              :width="xScale.bandwidth()"
+              :height="height - margin.bottom - yScale(d.value)"
+              :x="xScale(i)"
+              :y="yScale(d.value)"
+            ></rect>
+            <rect
+              :fill="fill"
+              stroke="none"
+              fill-opacity="0.2"
+              :width="xScale.bandwidth()"
+              :height="height - margin.bottom - yScale(d.value)"
+              :x="xScale(i)"
+              :y="yScale(d.value)"
+            ></rect>
+          </g>
+        </template>
       </g>
     </svg>
   </div>
@@ -183,6 +211,17 @@ export default {
     const rangeX = computed(() => [margin.left, width.value - margin.right]);
     const rangeY = computed(() => [height.value - margin.bottom, margin.top]);
 
+    const minXVal = computed(() => {
+      if (activeVariable.value === "rain") return 0;
+
+      return Math.min(...plotData.value.map((d) => d.timestamp));
+    });
+
+    const maxXVal = computed(() => {
+      if (activeVariable.value === "rain") return plotData.value.length - 1;
+      return Math.max(...plotData.value.map((d) => d.timestamp));
+    });
+
     const minVal = computed(() => {
       if (activeVariable.value === "rain") return 0;
 
@@ -192,14 +231,15 @@ export default {
       return minVal;
     });
 
-    const maxVal = computed(() =>
-      Math.max(...plotData.value.map((d) => d.value))
-    );
+    const maxVal = computed(() => {
+      if (activeVariable.value === "rain") return 1;
+      return Math.max(...plotData.value.map((d) => d.value));
+    });
 
     const xScale = computed(() => {
       const x = plotData.value.map((d, i) => i);
       if (activeVariable.value === "rain")
-        return d3.scaleBand().range(rangeX.value).padding(0.2).domain(x);
+        return d3.scaleBand().range(rangeX.value).domain(x);
       return d3
         .scaleTime()
         .range(rangeX.value)
@@ -215,7 +255,8 @@ export default {
       d3.axisTop().scale(yScale.value);
       const area = d3
         .area()
-        .defined((d) => !isNaN(d.value) && d.value !== null)
+        .defined(valueIsValid)
+        .curve(d3.curveMonotoneX)
         .x((d) => xScale.value(d.timestamp))
         .y0(yScale.value(minVal.value))
         .y1((d) => yScale.value(d.value));
@@ -228,7 +269,8 @@ export default {
       d3.axisTop().scale(yScale.value);
       const line = d3
         .line()
-        .defined((d) => !isNaN(d.value) && d.value !== null)
+        .defined(valueIsValid)
+        .curve(d3.curveMonotoneX)
         .x((d) => xScale.value(d.timestamp))
         .y((d) => yScale.value(d.value));
 
@@ -253,12 +295,9 @@ export default {
       return fill;
     });
 
-    const xAxisPath = computed(() => {
-      const n = plotData.value.length;
-      const s = xScale.value(0);
-      const e = xScale.value(n - 1);
-      return `M${s},0H${e}`;
-    });
+    const xAxisPath = computed(
+      () => `M${xScale.value(minXVal.value)},0H${xScale.value(maxXVal.value)}`
+    );
 
     const xAxisTickTransform = (d, i) => {
       if (activeVariable.value === "rain") {
@@ -266,6 +305,8 @@ export default {
       }
       return `translate(${xScale.value(d.timestamp)},0)`;
     };
+
+    const yAxisTicks = computed(() => yScale.value.ticks(4));
 
     const dotColor = computed(() => {
       const { dotColor } = forecastVars.find(
@@ -275,40 +316,56 @@ export default {
       return dotColor;
     });
 
-    const valueText = (d) => {
+    const valueIsValid = (d) => !isNaN(d.value) && d.value !== null;
+
+    const valueText = (d, withUnits = false) => {
       const { units } = forecastVars.find(
         (f) => f.name === activeVariable.value
       );
 
       if (d === null) return d;
 
+      if (!withUnits) return activeVariable.value !== "rain" ? d : d * 100;
+
       if (activeVariable.value === "rain") {
         if (d < 0.01) return null;
+        if (!withUnits) return (d * 100).toFixed(0);
         return `${(d * 100).toFixed(0)} %`;
       }
 
       return `${d.toFixed(1)} ${units}`;
     };
 
-    const dateText = (d) => format(d, "hbbb eee");
+    const valueTextColor = computed(() => {
+      const { dotColor } = forecastVars.find(
+        (f) => f.name === activeVariable.value
+      );
+
+      return dotColor;
+    });
+
+    const dateText = (d, strFormat = "eee") => format(d, strFormat);
 
     return {
       margin,
+      viewBox,
+      stroke,
+      fill,
       forecastVars,
+      plotData,
       activeVariable,
       xScale,
       yScale,
       xAxisPath,
       xAxisTickTransform,
+      yAxisTicks,
       areaPlot,
       linePlot,
-      viewBox,
-      stroke,
-      fill,
       dotColor,
+      valueIsValid,
+      valueTextColor,
       dateText,
       valueText,
-      plotData,
     };
   },
 };
@@ -320,5 +377,9 @@ svg
   stroke-width: 2px
 .valueText
   font-size: 1rem
-  text-shadow: 0 0 0.3em black
+  text-shadow: 0 0 0.6em #222
+.xAxisText
+  font-size: 1.4rem
+.yAxisText
+  font-size: 1rem
 </style>
