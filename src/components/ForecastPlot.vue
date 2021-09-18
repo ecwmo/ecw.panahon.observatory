@@ -247,7 +247,7 @@ export default {
           timestamp: d.timestamp,
           value: d[activeVariable.value],
         }));
-      return data.value;
+      return [{ timestamp: Date.now() }];
     });
 
     const rangeX = computed(() => [margin.left, width.value - margin.right]);
