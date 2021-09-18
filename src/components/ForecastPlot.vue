@@ -84,7 +84,7 @@
         <path :d="areaPlot" stroke="none" :fill="fill" fill-opacity="0.2" />
         <path :d="linePlot" :stroke="stroke" fill="none" id="linePlot" />
         <!-- labels -->
-        <template v-for="(d, i) in plotData">
+        <template v-for="(d, i) in dots">
           <template v-if="valueIsValid(d)">
             <g
               :key="i"
@@ -93,19 +93,16 @@
               )})`"
               class="valueLabels"
             >
-              <template v-if="i % 12 === 0">
-                <circle :fill="dotColor" stroke="none" r="0.4rem"></circle>
-                <text
-                  v-if="i !== 0"
-                  y="-1rem"
-                  :fill="valueTextColor"
-                  stroke="none"
-                  text-anchor="middle"
-                  class="valueText"
-                >
-                  {{ valueText(d.value, true) }}
-                </text>
-              </template>
+              <circle :fill="dotColor" stroke="none" r="0.4rem"></circle>
+              <text
+                y="-1rem"
+                :fill="valueTextColor"
+                stroke="none"
+                text-anchor="middle"
+                class="valueText"
+              >
+                {{ valueText(d.value) }}
+              </text>
             </g>
           </template>
         </template>
@@ -370,6 +367,13 @@ export default {
 
     const yAxisTicks = computed(() => yScale.value.ticks(4));
 
+    const dots = computed(() => {
+      const dts = xScale.value.ticks(d3.timeHour.every(12));
+      return dts.map((t) =>
+        plotData.value.find((d) => d.timestamp.getTime() === t.getTime())
+      );
+    });
+
     const dotColor = computed(() => {
       const { dotColor } = forecastVars.find(
         (f) => f.name === activeVariable.value
@@ -395,11 +399,13 @@ export default {
     const valueText = (d, withUnits = false) => {
       if (d === null) return d;
 
-      if (!withUnits) return activeVariable.value !== "rain" ? d : d * 100;
+      if (!withUnits)
+        return activeVariable.value !== "rain"
+          ? d.toFixed(1)
+          : (d * 100).toFixed(0);
 
       if (activeVariable.value === "rain") {
         if (d < 0.01) return null;
-        if (!withUnits) return (d * 100).toFixed(0);
         return `${(d * 100).toFixed(0)} %`;
       }
 
@@ -508,6 +514,7 @@ export default {
       yAxisTicks,
       areaPlot,
       linePlot,
+      dots,
       dotColor,
       valueIsValid,
       valueTextColor,
@@ -529,13 +536,12 @@ svg
   font-size: 0.8rem
   stroke-width: 2px
 #tooltip
-  .valueText
-    font-size: 1rem
   .dateText
     font-size: 0.8rem
+  text-shadow: 0 0 0.6rem #222
 .valueText
-  font-size: 1rem
-  text-shadow: 0 0 0.6em #222
+  font-size: 1.2rem
+  text-shadow: 0 0 0.6rem #222
 .xAxisText
   font-size: 1.4rem
 .yAxisText
