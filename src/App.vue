@@ -36,54 +36,10 @@
             :forecastData="forecastDailyData"
             v-model="activeSite"
           />
-          <div class="w-full">
-            <nav
-              class="
-                flex
-                justify-evenly
-                text-xl
-                md:text-2xl
-                font-extralight
-                border-b-2
-                mt-3
-                md:mt-6
-              "
-            >
-              <a
-                class="py-2 px-4 text-center"
-                href="#"
-                @click.prevent="activeDay = 0"
-                :class="[
-                  activeDay === 0
-                    ? 'bg-gray-500 font-bold'
-                    : 'hover:bg-gray-500',
-                ]"
-                >Today</a
-              >
-              <a
-                class="py-2 px-4 text-center"
-                href="#"
-                @click.prevent="activeDay = 1"
-                :class="[
-                  activeDay === 1
-                    ? 'bg-gray-500 font-bold'
-                    : 'hover:bg-gray-500',
-                ]"
-                >Tomorrow</a
-              >
-              <a
-                class="py-2 px-4 text-center"
-                href="#"
-                @click.prevent="activeDay = 4"
-                :class="[
-                  activeDay === 4
-                    ? 'bg-gray-500 font-bold'
-                    : 'hover:bg-gray-500',
-                ]"
-                >Extended</a
-              >
-            </nav>
-          </div>
+          <ForecastNavTab
+            :activeDay="activeDay"
+            @set-active-day="activeDay = $event"
+          />
           <transition name="fade">
             <ForecastCards
               :forecastData="forecastDailyData"
@@ -113,6 +69,7 @@ import Navbar from "@/components/Navbar.vue";
 import ForecastSidebar from "@/components/ForecastSidebar.vue";
 import ForecastImg from "@/components/ForecastImg.vue";
 import SiteDropDown from "@/components/SiteDropDown.vue";
+import ForecastNavTab from "@/components/ForecastNavTab.vue";
 import ForecastCards from "@/components/ForecastCards.vue";
 // import ForecastTable from "@/components/ForecastTable.vue";
 import ForecastPlot from "@/components/ForecastPlot.vue";
@@ -126,6 +83,7 @@ export default {
     ForecastSidebar,
     ForecastImg,
     SiteDropDown,
+    ForecastNavTab,
     ForecastCards,
     ForecastPlot,
   },
