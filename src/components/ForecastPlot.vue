@@ -178,15 +178,10 @@ import { ref, computed, toRefs } from "vue";
 import * as d3 from "d3";
 import { format } from "date-fns";
 
-import useForecastPlot from "@/composables/useForecastPlot";
-
 export default {
   name: "ForecastPlot",
   props: {
     data: {
-      required: true,
-    },
-    site: {
       required: true,
     },
     width: {
@@ -244,17 +239,15 @@ export default {
     ];
 
     const margin = { top: 40, right: 30, bottom: 30, left: 40 };
-    const { data, site, width, height } = toRefs(props);
-
-    const { forecastPlotData } = useForecastPlot(data, site);
+    const { data, width, height } = toRefs(props);
 
     const plotData = computed(() => {
-      if (forecastPlotData.value.length > 0)
-        return forecastPlotData.value.map((d) => ({
+      if (data.value.length > 0)
+        return data.value.map((d) => ({
           timestamp: d.timestamp,
           value: d[activeVariable.value],
         }));
-      return forecastPlotData.value;
+      return data.value;
     });
 
     const rangeX = computed(() => [margin.left, width.value - margin.right]);

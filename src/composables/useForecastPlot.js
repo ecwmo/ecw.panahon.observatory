@@ -1,8 +1,8 @@
 import { computed } from "vue";
 
-const useForecastPlot = (forecastData, activeSite) => {
+const useForecastPlot = (forecastData) => {
   const forecastPlotData = computed(() => {
-    let data = forecastData.value.filter((d) => d.name === activeSite.value);
+    let data = forecastData.value;
     if (data.length > 0) {
       return data[0].forecast.map((d) => ({
         timestamp: new Date(d.timestamp),
