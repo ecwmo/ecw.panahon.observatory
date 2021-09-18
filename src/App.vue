@@ -7,7 +7,7 @@
     >
       <div class="flex flex-col-reverse items-center md:flex-row w-full">
         <transition name="fade">
-          <div class="flex">
+          <div class="flex" v-show="!extendedMode">
             <!-- sidebar -->
             <div class="flex flex-col items-center mt-8 md:mt-6">
               <ForecastSidebar
@@ -16,7 +16,6 @@
                 :activeImgType="activeImgType"
                 @set-active-variable="activeVariable = $event"
                 @set-active-img-type="activeImgType = $event"
-                v-show="activeDay <= 1"
               />
             </div>
             <!-- map -->
@@ -25,7 +24,6 @@
                 :varName="activeVariable"
                 :day="activeDay"
                 :imgType="activeImgType"
-                v-show="activeDay <= 1"
               />
             </div>
           </div>
@@ -93,14 +91,14 @@
               :activeDay="activeDay"
               :activeVariable="activeVariable"
               @set-active-variable="activeVariable = $event"
-              v-show="activeDay <= 1"
+              v-show="!extendedMode"
             />
           </transition>
         </div>
       </div>
       <!-- Graph -->
       <transition name="slide-fade">
-        <div class="w-full flex justify-center pt-8" v-show="activeDay > 1">
+        <div class="w-full flex justify-center pt-8" v-show="extendedMode">
           <ForecastPlot :data="forecastHourlyData" :site="activeSite" />
         </div>
       </transition>
@@ -109,7 +107,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 import Navbar from "@/components/Navbar.vue";
 import ForecastSidebar from "@/components/ForecastSidebar.vue";
@@ -166,6 +164,8 @@ export default {
     const { forecastDailyData, forecastHourlyData, forecastDateStr } =
       useForecastData();
 
+    const extendedMode = computed(() => activeDay.value > 1);
+
     return {
       activeSite,
       activeDay,
@@ -175,6 +175,7 @@ export default {
       forecastDailyData,
       forecastHourlyData,
       forecastDateStr,
+      extendedMode,
     };
   },
 };
