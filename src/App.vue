@@ -58,6 +58,26 @@
           <ForecastPlot :data="forecastHourlyData" :site="activeSite" />
         </div>
       </transition>
+      <!-- Disclaimer -->
+      <div
+        class="
+          flex
+          w-full
+          pt-8
+          italic
+          text-xs
+          font-medium
+          text-justify
+          self-center
+          break-words
+          md:break-normal
+          model-caption
+        "
+      >
+        <span class="font-bold">DISCLAIMER</span>: This website contains
+        experimental forecasts for research purposes. For official updates and
+        warnings, please refer to PAGASA and other government agencies.
+      </div>
     </div>
   </div>
 </template>
