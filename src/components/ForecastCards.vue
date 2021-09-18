@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col p-6 space-y-6">
-    <div class="flex justify-center space-x-6">
+  <div class="w-full flex flex-col flex-wrap mt-3 md:mt-6 gap-3 md:gap-6">
+    <div class="flex flex-wrap justify-center gap-3 md:gap-6">
       <ForecastCard
         v-for="w in cleanEnergyData"
         :key="w.name"
@@ -15,7 +15,7 @@
         ]"
       />
     </div>
-    <div class="flex justify-center space-x-6">
+    <div class="flex flex-wrap justify-center gap-3 md:gap-6">
       <ForecastCard
         v-for="w in weatherData"
         :key="w.name"

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col w-96">
     <img alt="Map" :src="forecastImg" />
     <img alt="Colobar" :src="forecastImgCmap" class="transform scale-50" />
   </div>

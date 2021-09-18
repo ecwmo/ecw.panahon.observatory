@@ -1,96 +1,110 @@
 <template>
-  <Navbar />
-  <div id="main" class="flex flex-col py-8 px-4 bg-gray-700 text-gray-200">
-    <div class="flex">
-      <!-- sidebar -->
-      <div class="w-1/12 flex flex-col items-center">
+  <div class="flex flex-col w-full h-screen">
+    <Navbar />
+    <div
+      id="main"
+      class="w-full flex flex-col p-4 md:p-6 bg-gray-700 text-gray-200"
+    >
+      <div class="flex flex-col-reverse items-center md:flex-row w-full">
         <transition name="fade">
-          <ForecastSidebar
-            :forecastVars="forecastVars"
-            :activeVariable="activeVariable"
-            :activeImgType="activeImgType"
-            @set-active-variable="activeVariable = $event"
-            @set-active-img-type="activeImgType = $event"
-            v-show="activeDay <= 1"
-          />
+          <div class="flex">
+            <!-- sidebar -->
+            <div class="flex flex-col items-center mt-8 md:mt-6">
+              <ForecastSidebar
+                :forecastVars="forecastVars"
+                :activeVariable="activeVariable"
+                :activeImgType="activeImgType"
+                @set-active-variable="activeVariable = $event"
+                @set-active-img-type="activeImgType = $event"
+                v-show="activeDay <= 1"
+              />
+            </div>
+            <!-- map -->
+            <div class="flex flex-col">
+              <ForecastImg
+                :varName="activeVariable"
+                :day="activeDay"
+                :imgType="activeImgType"
+                v-show="activeDay <= 1"
+              />
+            </div>
+          </div>
         </transition>
-      </div>
-      <!-- map -->
-      <div class="w-1/3 flex flex-col">
-        <transition name="fade">
-          <ForecastImg
-            :varName="activeVariable"
-            :day="activeDay"
-            :imgType="activeImgType"
-            v-show="activeDay <= 1"
-          />
-        </transition>
-      </div>
-      <!-- info panel -->
-      <div class="w-2/3 flex flex-col items-start">
-        <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
-        <span class="text-3xl mb-3">Clean Power | Weather Forecast</span>
-        <div>
+        <!-- info panel -->
+        <div class="flex flex-grow flex-col items-start">
+          <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
+          <span class="text-3xl mb-3">Clean Power | Weather Forecast</span>
           <SiteDropDown
             :forecastData="forecastDailyData"
             v-model="activeSite"
           />
+          <div class="w-full">
+            <nav
+              class="
+                flex
+                justify-evenly
+                text-xl
+                md:text-2xl
+                font-extralight
+                border-b-2
+                mt-3
+                md:mt-6
+              "
+            >
+              <a
+                class="py-2 px-4 text-center"
+                href="#"
+                @click.prevent="activeDay = 0"
+                :class="[
+                  activeDay === 0
+                    ? 'bg-gray-500 font-bold'
+                    : 'hover:bg-gray-500',
+                ]"
+                >Today</a
+              >
+              <a
+                class="py-2 px-4 text-center"
+                href="#"
+                @click.prevent="activeDay = 1"
+                :class="[
+                  activeDay === 1
+                    ? 'bg-gray-500 font-bold'
+                    : 'hover:bg-gray-500',
+                ]"
+                >Tomorrow</a
+              >
+              <a
+                class="py-2 px-4 text-center"
+                href="#"
+                @click.prevent="activeDay = 4"
+                :class="[
+                  activeDay === 4
+                    ? 'bg-gray-500 font-bold'
+                    : 'hover:bg-gray-500',
+                ]"
+                >Extended</a
+              >
+            </nav>
+          </div>
+          <transition name="fade">
+            <ForecastCards
+              :forecastData="forecastDailyData"
+              :activeSite="activeSite"
+              :activeDay="activeDay"
+              :activeVariable="activeVariable"
+              @set-active-variable="activeVariable = $event"
+              v-show="activeDay <= 1"
+            />
+          </transition>
         </div>
-        <div class="w-full">
-          <nav
-            class="text-2xl font-extralight border-b-2 mt-6 flex justify-evenly"
-          >
-            <a
-              class="py-2 px-4 text-center"
-              href="#"
-              @click.prevent="activeDay = 0"
-              :class="[
-                activeDay === 0 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
-              ]"
-              >Today</a
-            >
-            <a
-              class="py-2 px-4 text-center"
-              href="#"
-              @click.prevent="activeDay = 1"
-              :class="[
-                activeDay === 1 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
-              ]"
-              >Tomorrow</a
-            >
-            <a
-              class="py-2 px-4 text-center"
-              href="#"
-              @click.prevent="activeDay = 4"
-              :class="[
-                activeDay === 4 ? 'bg-gray-500 font-bold' : 'hover:bg-gray-500',
-              ]"
-              >Extended</a
-            >
-          </nav>
-        </div>
-        <transition name="fade">
-          <ForecastCards
-            :forecastData="forecastDailyData"
-            :activeSite="activeSite"
-            :activeDay="activeDay"
-            :activeVariable="activeVariable"
-            @set-active-variable="activeVariable = $event"
-            v-show="activeDay <= 1"
-          />
-        </transition>
       </div>
-    </div>
-    <transition name="slide-fade">
-      <div class="w-full flex justify-center pt-8" v-show="activeDay > 1">
-        <div class="w-full flex flex-col items-center">
-          <!-- Graph -->
+      <!-- Graph -->
+      <transition name="slide-fade">
+        <div class="w-full flex justify-center pt-8" v-show="activeDay > 1">
           <ForecastPlot :data="forecastHourlyData" :site="activeSite" />
-          <!-- Table
-          <ForecastTable :data="forecastDailyData" :site="activeSite" /> -->
         </div>
-      </div>
-    </transition>
+      </transition>
+    </div>
   </div>
 </template>
 

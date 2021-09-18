@@ -1,7 +1,6 @@
 <template>
-  <div class="flex flex-col space-y-4 items-center">
-    <span class="text-xl font-bold">Map</span>
-    <div class="flex space-x-2 mb-2">
+  <div class="w-28 flex flex-col gap-y-3 items-center">
+    <div class="flex gap-x-2">
       <a
         class="py-0.5 px-3 text-xs shadow-lg text-center rounded-full"
         href="#"
@@ -16,9 +15,9 @@
         >{{ v }}</a
       >
     </div>
-    <div class="flex flex-col space-y-3">
+    <div class="flex flex-col gap-y-3">
       <a
-        class="py-2 px-4 text-xs shadow-lg text-center"
+        class="py-2 px-3 text-xs shadow-lg text-center"
         href="#"
         v-for="v in forecastVars"
         :key="v.name"
