@@ -91,7 +91,6 @@ import ForecastImg from "@/components/ForecastImg.vue";
 import SiteDropDown from "@/components/SiteDropDown.vue";
 import ForecastNavTab from "@/components/ForecastNavTab.vue";
 import ForecastCards from "@/components/ForecastCards.vue";
-// import ForecastTable from "@/components/ForecastTable.vue";
 import ForecastPlot from "@/components/ForecastPlot.vue";
 
 import useForecastData from "@/composables/useForecastData";
