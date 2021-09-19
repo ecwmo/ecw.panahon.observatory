@@ -1,0 +1,47 @@
+[
+  {
+    "name": "wpd",
+    "name2": "wndPow",
+    "units": "MW",
+    "title": "WIND ENERGY",
+    "stroke": "#6EE7B7",
+    "fill": "#D1FAE5",
+    "dotColor": "#34D399"
+  },
+  {
+    "name": "ppv",
+    "name2": "solPow",
+    "units": "MW",
+    "title": "SOLAR ENERGY",
+    "stroke": "#FBBF24",
+    "fill": "#FDE68A",
+    "dotColor": "#F59E0B"
+  },
+  {
+    "name": "temp",
+    "name2": "temp",
+    "units": "°C",
+    "title": "TEMPERATURE",
+    "stroke": "#DC2626",
+    "fill": "#F87171",
+    "dotColor": "#B91C1C"
+  },
+  {
+    "name": "wind",
+    "name2": "wspd",
+    "units": "kph",
+    "title": "WIND",
+    "stroke": "#8B5CF6",
+    "fill": "#C4B5FD",
+    "dotColor": "#7C3AED"
+  },
+  {
+    "name": "rain",
+    "name2": "rainChance",
+    "units": "%",
+    "title": "RAIN",
+    "stroke": "#2563EB",
+    "fill": "#60A5FA",
+    "dotColor": "#1D4ED8"
+  }
+]

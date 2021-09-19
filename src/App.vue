@@ -55,7 +55,7 @@
       <!-- Graph -->
       <transition name="slide-fade">
         <div class="w-full flex justify-center pt-8" v-show="extendedMode">
-          <ForecastPlot :data="forecastPlotData" />
+          <ForecastPlot :data="activeSiteHourlyData" />
         </div>
       </transition>
       <!-- Disclaimer -->
@@ -94,7 +94,6 @@ import ForecastCards from "@/components/ForecastCards.vue";
 import ForecastPlot from "@/components/ForecastPlot.vue";
 
 import useForecastData from "@/composables/useForecastData";
-import useForecastPlot from "@/composables/useForecastPlot";
 
 export default {
   name: "App",
@@ -143,10 +142,8 @@ export default {
       useForecastData();
 
     const activeSiteHourlyData = computed(() =>
-      forecastHourlyData.value.filter((d) => d.name === activeSite.value)
+      forecastHourlyData.value.find((d) => d.name === activeSite.value)
     );
-
-    const { forecastPlotData } = useForecastPlot(activeSiteHourlyData);
 
     const extendedMode = computed(() => activeDay.value > 1);
 
@@ -155,9 +152,9 @@ export default {
       activeDay,
       activeVariable,
       activeImgType,
+      activeSiteHourlyData,
       forecastVars,
       forecastDailyData,
-      forecastPlotData,
       forecastDateStr,
       extendedMode,
     };

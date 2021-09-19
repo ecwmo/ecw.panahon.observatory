@@ -30,13 +30,13 @@
       >
         <path stroke="currentColor" :d="xAxisPath"></path>
         <g
-          v-for="(xAxisTick, i) in xAxisTicks"
-          :key="i"
-          :transform="xAxisTickTransform(xAxisTick)"
+          v-for="xAxisTick in xAxisTicks"
+          :key="xAxisTick.value"
+          :transform="xAxisTick.transform"
         >
           <line stroke="currentColor" y2="6"></line>
           <text fill="currentColor" y="9" dy="0.71em" class="xAxisText">
-            {{ dateText(xAxisTick) }}
+            {{ xAxisTick.valueStr }}
           </text>
         </g>
       </g>
@@ -44,8 +44,8 @@
       <g>
         <g
           v-for="(yAxisTick, i) in yAxisTicks"
-          :key="i"
-          :transform="`translate(0,${yScale(yAxisTick)})`"
+          :key="yAxisTick.value"
+          :transform="yAxisTick.transform"
           fill="none"
           text-anchor="middle"
         >
@@ -75,79 +75,48 @@
             stroke="none"
             class="yAxisText"
           >
-            {{ valueText(yAxisTick) }}
+            {{ yAxisTick.valueStr }}
           </text>
         </g>
       </g>
       <!-- default plot -->
-      <g v-if="activeVariable !== 'rain'">
-        <path :d="areaPlot" stroke="none" :fill="fill" fill-opacity="0.2" />
-        <path :d="linePlot" :stroke="stroke" fill="none" id="linePlot" />
+      <LinePlot
+        v-if="activeVariable !== 'rain'"
+        :data="data"
+        :varName="activeVariable"
+        :stroke="stroke"
+        :fill="fill"
+        :height="height"
+        :width="width"
+        :margin="margin"
+        :isHovered="isHovered"
+      >
         <!-- labels -->
-        <template v-for="(d, i) in dots">
-          <template v-if="valueIsValid(d)">
-            <g
-              :key="i"
-              :transform="`translate(${xScale(d.timestamp)},${yScale(
-                d.value
-              )})`"
-              class="valueLabels"
-            >
-              <circle :fill="dotColor" stroke="none" r="0.4rem"></circle>
-              <text
-                y="-1rem"
-                :fill="valueTextColor"
-                stroke="none"
-                text-anchor="middle"
-                class="valueText"
-              >
-                {{ valueText(d.value) }}
-              </text>
-            </g>
-          </template>
-        </template>
-      </g>
-      <!-- histogram -->
-      <g v-else>
-        <g
-          v-for="(d, i) in plotData"
-          :key="i"
-          :transform="`translate(${-xScale.bandwidth() / 2},0)`"
-          :data-index="i"
-          class="bar"
-          @mouseenter="handleBarMouseEnter"
-          @mouseleave="handleBarMouseLeave"
-        >
-          <rect
-            :fill="fill"
-            stroke="none"
-            fill-opacity="0"
-            :width="xScale.bandwidth()"
-            :height="height - margin.bottom"
-            :x="xScale(i)"
-            :y="0"
-          ></rect>
-          <rect
-            fill="none"
-            :stroke="stroke"
-            :width="xScale.bandwidth()"
-            :height="height - margin.bottom - yScale(d.value)"
-            :x="xScale(i)"
-            :y="yScale(d.value)"
-          ></rect>
-          <rect
-            :fill="fill"
-            stroke="none"
-            fill-opacity="0.2"
-            :width="xScale.bandwidth()"
-            :height="height - margin.bottom - yScale(d.value)"
-            :x="xScale(i)"
-            :y="yScale(d.value)"
-          ></rect>
-        </g>
-      </g>
+        <DotLabels
+          v-show="!isHovered"
+          :data="data"
+          :varName="activeVariable"
+          :height="height"
+          :width="width"
+          :margin="margin"
+          :dotFill="dotColor"
+          :textFill="dotColor"
+        />
+      </LinePlot>
+      <!-- barchart -->
+      <BarChart
+        v-else
+        :data="data"
+        :varName="activeVariable"
+        :stroke="stroke"
+        :fill="fill"
+        :height="height"
+        :width="width"
+        :margin="margin"
+        @set-hovered-bar="hoveredBar = $event"
+      />
       <!-- tooltip -->
-      <g id="tooltip" display="none">
+      <g id="tooltip" v-show="isHovered">
         <circle
           v-if="activeVariable !== 'rain'"
           :fill="dotColor"
@@ -176,7 +145,15 @@
 <script>
 import { ref, computed, toRefs } from "vue";
 import * as d3 from "d3";
-import { format } from "date-fns";
+
+import forecastVars from "@/data/forecastVars.json";
+
+import usePlot from "@/composables/usePlot";
+import usePlotFormatter from "@/composables/usePlotFormatter";
+
+import LinePlot from "@/components/graph/LinePlot.vue";
+import BarChart from "@/components/graph/BarChart.vue";
+import DotLabels from "@/components/graph/DotLabels.vue";
 
 export default {
   name: "ForecastPlot",
@@ -193,131 +170,31 @@ export default {
       type: Number,
     },
   },
+  components: {
+    LinePlot,
+    BarChart,
+    DotLabels,
+  },
   setup(props) {
     const activeVariable = ref("wpd");
+    const hoveredBar = ref();
 
-    const forecastVars = [
-      {
-        name: "wpd",
-        units: "MW",
-        title: "WIND ENERGY",
-        stroke: "#6EE7B7",
-        fill: "#D1FAE5",
-        dotColor: "#34D399",
-      },
-      {
-        name: "ppv",
-        units: "MW",
-        title: "SOLAR ENERGY",
-        stroke: "#FBBF24",
-        fill: "#FDE68A",
-        dotColor: "#F59E0B",
-      },
-      {
-        name: "temp",
-        units: "°C",
-        title: "TEMPERATURE",
-        stroke: "#DC2626",
-        fill: "#F87171",
-        dotColor: "#B91C1C",
-      },
-      {
-        name: "wind",
-        units: "kph",
-        title: "WIND",
-        stroke: "#8B5CF6",
-        fill: "#C4B5FD",
-        dotColor: "#7C3AED",
-      },
-      {
-        name: "rain",
-        title: "RAIN",
-        stroke: "#2563EB",
-        fill: "#60A5FA",
-        dotColor: "#1D4ED8",
-      },
-    ];
-
-    const margin = { top: 40, right: 30, bottom: 30, left: 40 };
+    const margin = ref({ top: 40, right: 30, bottom: 30, left: 40 });
     const { data, width, height } = toRefs(props);
+    const isHovered = ref(false);
 
-    const plotData = computed(() => {
-      if (data.value.length > 0)
-        return data.value.map((d) => ({
-          timestamp: d.timestamp,
-          value: d[activeVariable.value],
-        }));
-      return [{ timestamp: Date.now() }];
-    });
+    const {
+      plotData,
+      rangeY,
+      xScale,
+      yScale,
+      xAxisPath,
+      xAxisTicks,
+      yAxisTicks,
+      valueIsValid,
+    } = usePlot(data, activeVariable, height, width, margin);
 
-    const rangeX = computed(() => [margin.left, width.value - margin.right]);
-    const rangeY = computed(() => [height.value - margin.bottom, margin.top]);
-
-    const minXVal = computed(() => {
-      if (activeVariable.value === "rain") return 0;
-
-      return Math.min(...plotData.value.map((d) => d.timestamp));
-    });
-
-    const maxXVal = computed(() => {
-      if (activeVariable.value === "rain") return plotData.value.length - 1;
-      return Math.max(...plotData.value.map((d) => d.timestamp));
-    });
-
-    const minVal = computed(() => {
-      if (activeVariable.value === "rain") return 0;
-
-      const _minVal = Math.min(...plotData.value.map((d) => d.value));
-      const minVal = _minVal * 0.95;
-
-      return minVal;
-    });
-
-    const maxVal = computed(() => {
-      if (activeVariable.value === "rain") return 1;
-      return Math.max(...plotData.value.map((d) => d.value));
-    });
-
-    const xScale = computed(() => {
-      const x = plotData.value.map((d, i) => i);
-      if (activeVariable.value === "rain")
-        return d3.scaleBand().range(rangeX.value).domain(x);
-      return d3
-        .scaleTime()
-        .range(rangeX.value)
-        .domain(d3.extent(plotData.value, (d) => d.timestamp));
-    });
-
-    const yScale = computed(() =>
-      d3.scaleLinear().range(rangeY.value).domain([minVal.value, maxVal.value])
-    );
-
-    const areaPlot = computed(() => {
-      d3.axisLeft().scale(xScale.value);
-      d3.axisTop().scale(yScale.value);
-      const area = d3
-        .area()
-        .defined(valueIsValid)
-        .curve(d3.curveMonotoneX)
-        .x((d) => xScale.value(d.timestamp))
-        .y0(yScale.value(minVal.value))
-        .y1((d) => yScale.value(d.value));
-
-      return area(plotData.value.filter(area.defined()));
-    });
-
-    const linePlot = computed(() => {
-      d3.axisLeft().scale(xScale.value);
-      d3.axisTop().scale(yScale.value);
-      const line = d3
-        .line()
-        .defined(valueIsValid)
-        .curve(d3.curveMonotoneX)
-        .x((d) => xScale.value(d.timestamp))
-        .y((d) => yScale.value(d.value));
-
-      return line(plotData.value.filter(line.defined()));
-    });
+    const { varUnit, valueText, dateText } = usePlotFormatter(activeVariable);
 
     const viewBox = computed(() => `0 0 ${width.value} ${height.value}`);
 
@@ -337,36 +214,6 @@ export default {
       return fill;
     });
 
-    const xAxisPath = computed(
-      () => `M${xScale.value(minXVal.value)},0H${xScale.value(maxXVal.value)}`
-    );
-
-    const xAxisTickTransform = (d) => {
-      if (activeVariable.value === "rain") {
-        const idx = plotData.value.findIndex((_d) => _d.timestamp === d);
-        return `translate(${xScale.value(idx)},0)`;
-      }
-      return `translate(${xScale.value(d)},0)`;
-    };
-
-    const xAxisTicks = computed(() => {
-      if (activeVariable.value === "rain") {
-        return plotData.value
-          .map((d) => d.timestamp)
-          .filter((d) => d.getHours() === 0);
-      }
-      return xScale.value.ticks(d3.timeDay.every(1));
-    });
-
-    const yAxisTicks = computed(() => yScale.value.ticks(4));
-
-    const dots = computed(() => {
-      const dts = xScale.value.ticks(d3.timeHour.every(12));
-      return dts.map((t) =>
-        plotData.value.find((d) => d.timestamp.getTime() === t.getTime())
-      );
-    });
-
     const dotColor = computed(() => {
       const { dotColor } = forecastVars.find(
         (f) => f.name === activeVariable.value
@@ -374,36 +221,6 @@ export default {
 
       return dotColor;
     });
-
-    const valueIsValid = (d) => !isNaN(d.value) && d.value !== null;
-
-    const varUnit = computed(() => {
-      const { units } = forecastVars.find(
-        (f) => f.name === activeVariable.value
-      );
-
-      if (activeVariable.value === "rain") {
-        return "%";
-      }
-
-      return units;
-    });
-
-    const valueText = (d, withUnits = false) => {
-      if (d === null) return d;
-
-      if (!withUnits)
-        return activeVariable.value !== "rain"
-          ? d.toFixed(1)
-          : (d * 100).toFixed(0);
-
-      if (activeVariable.value === "rain") {
-        if (d < 0.01) return null;
-        return `${(d * 100).toFixed(0)} %`;
-      }
-
-      return `${d.toFixed(1)} ${varUnit.value}`;
-    };
 
     const valueTextColor = computed(() => {
       const { dotColor } = forecastVars.find(
@@ -413,82 +230,44 @@ export default {
       return dotColor;
     });
 
-    const dateText = (d, strFormat = "eee") => format(d, strFormat);
-
     const handleMouseMove = (ev) => {
+      let i;
+      let transform = "";
+      let pt;
+      const tooltip = d3.select("#tooltip");
+
       if (activeVariable.value !== "rain") {
-        const tooltip = d3.select("#tooltip");
-
-        const values = plotData.value.map((d) => d.value);
-        const dates = plotData.value.map((d) => d.timestamp);
-
         const pointer = d3.pointer(ev);
         const xm = xScale.value.invert(pointer[0]);
+        const dates = plotData.value.map((d) => d.x);
 
-        const i = d3.bisectCenter(dates, xm);
+        i = d3.bisectCenter(dates, xm);
+        pt = plotData.value[i];
+        transform = `translate(${xScale.value(pt.x)},${yScale.value(pt.y)})`;
+      } else {
+        if (hoveredBar.value !== undefined) {
+          const bar = d3.select(hoveredBar.value.target);
+          const x = bar.select("rect").attr("x");
+          i = hoveredBar.value.target.dataset["index"];
+          pt = plotData.value[i];
 
-        if (valueIsValid(plotData.value[i])) {
-          tooltip.attr(
-            "transform",
-            `translate(${xScale.value(dates[i])},${yScale.value(values[i])})`
-          );
-          tooltip.select("text").text(valueText(values[i], true));
-          tooltip
-            .select("text:last-of-type")
-            .text(dateText(dates[i], "MMM d, haaa"));
+          transform = `translate(${x},${rangeY.value[1]})`;
         }
+      }
+
+      if (valueIsValid(pt)) {
+        tooltip.attr("transform", transform);
+        tooltip.select("text").text(valueText(pt.y, true));
+        tooltip.select("text:last-of-type").text(dateText(pt.x, "MMM d, haaa"));
       }
     };
 
     const handleMouseEnter = () => {
-      const tooltip = d3.select("#tooltip");
-      const valueLabels = d3.selectAll(".valueLabels");
-      const linePlot = d3.select("#linePlot");
-
-      linePlot.attr("stroke-opacity", "0.5").attr("fill-opacity", "0.1");
-      valueLabels.attr("display", "none");
-      tooltip.attr("display", null);
+      isHovered.value = true;
     };
 
     const handleMouseLeave = () => {
-      const tooltip = d3.select("#tooltip");
-      const valueLabels = d3.selectAll(".valueLabels");
-      const linePlot = d3.select("#linePlot");
-
-      linePlot.attr("stroke-opacity", null).attr("fill-opacity", "0.25");
-      tooltip.attr("display", "none");
-      valueLabels.attr("display", null);
-    };
-
-    const handleBarMouseEnter = (ev) => {
-      const bar = d3.select(ev.target);
-      const x = bar.select("rect").attr("x");
-
-      const tooltip = d3.select("#tooltip");
-      const valueLabels = d3.selectAll(".valueLabels");
-
-      const i = ev.target.dataset["index"];
-
-      tooltip
-        .attr("display", null)
-        .attr("transform", `translate(${x},${rangeY.value[1]})`);
-      tooltip.select("text").text(valueText(plotData.value[i].value, true));
-      tooltip
-        .select("text:last-of-type")
-        .text(dateText(plotData.value[i].timestamp, "MMM d, haaa"));
-
-      bar.attr("stroke-width", "5px").attr("fill-opacity", "0.1");
-      valueLabels.attr("display", "none");
-    };
-
-    const handleBarMouseLeave = (ev) => {
-      const tooltip = d3.select("#tooltip");
-      const valueLabels = d3.selectAll(".valueLabels");
-      const bar = d3.select(ev.target);
-
-      bar.attr("stroke-width", "2px").attr("fill-opacity", "0.25");
-      tooltip.attr("display", "none");
-      valueLabels.attr("display", null);
+      isHovered.value = false;
     };
 
     return {
@@ -499,26 +278,17 @@ export default {
       forecastVars,
       plotData,
       activeVariable,
-      xScale,
-      yScale,
       xAxisPath,
-      xAxisTickTransform,
       xAxisTicks,
       yAxisTicks,
-      areaPlot,
-      linePlot,
-      dots,
       dotColor,
-      valueIsValid,
       valueTextColor,
-      dateText,
-      valueText,
       varUnit,
+      isHovered,
+      hoveredBar,
       handleMouseMove,
       handleMouseEnter,
       handleMouseLeave,
-      handleBarMouseEnter,
-      handleBarMouseLeave,
     };
   },
 };
