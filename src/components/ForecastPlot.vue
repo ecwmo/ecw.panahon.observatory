@@ -32,62 +32,21 @@
       @mouseleave="handleMouseLeave"
     >
       <!-- x-axis -->
-      <g
-        :transform="`translate(0,${height - margin.bottom})`"
-        fill="none"
-        text-anchor="middle"
-      >
-        <path stroke="currentColor" :d="xAxisPath"></path>
-        <g
-          v-for="xAxisTick in xAxisTicks"
-          :key="xAxisTick.value"
-          :transform="xAxisTick.transform"
-        >
-          <line stroke="currentColor" y2="6"></line>
-          <text fill="currentColor" y="9" dy="0.71em" class="xAxisText">
-            {{ xAxisTick.valueStr }}
-          </text>
-        </g>
-      </g>
+      <XAxis
+        :data="data"
+        :varName="activeVariable"
+        :height="height"
+        :width="width"
+        :margin="margin"
+      />
       <!-- y-axis -->
-      <g>
-        <g
-          v-for="(yAxisTick, i) in yAxisTicks"
-          :key="yAxisTick.value"
-          :transform="yAxisTick.transform"
-          fill="none"
-          text-anchor="middle"
-        >
-          <path
-            stroke="currentColor"
-            :d="xAxisPath"
-            stroke-dasharray="3,3"
-            stroke-width="0.05em"
-          ></path>
-          <text
-            v-if="i === yAxisTicks.length - 1"
-            :x="margin.left"
-            y="-6"
-            text-anchor="start"
-            alignment-baseline="top"
-            fill="currentColor"
-            stroke="none"
-            class="yAxisUnit"
-          >
-            {{ varUnit }}
-          </text>
-          <text
-            :x="margin.left - 6"
-            text-anchor="end"
-            alignment-baseline="middle"
-            fill="currentColor"
-            stroke="none"
-            class="yAxisText"
-          >
-            {{ yAxisTick.valueStr }}
-          </text>
-        </g>
-      </g>
+      <YAxis
+        :data="data"
+        :varName="activeVariable"
+        :height="height"
+        :width="width"
+        :margin="margin"
+      />
       <!-- default plot -->
       <LinePlot
         v-if="activeVariable !== 'rain'"
@@ -160,6 +119,8 @@ import forecastVars from "@/data/forecastVars.json";
 import usePlot from "@/composables/usePlot";
 import usePlotFormatter from "@/composables/usePlotFormatter";
 
+import XAxis from "@/components/graph/XAxis.vue";
+import YAxis from "@/components/graph/YAxis.vue";
 import LinePlot from "@/components/graph/LinePlot.vue";
 import BarChart from "@/components/graph/BarChart.vue";
 import DotLabels from "@/components/graph/DotLabels.vue";
@@ -180,6 +141,8 @@ export default {
     },
   },
   components: {
+    XAxis,
+    YAxis,
     LinePlot,
     BarChart,
     DotLabels,
@@ -192,18 +155,15 @@ export default {
     const { data, width, height } = toRefs(props);
     const isHovered = ref(false);
 
-    const {
-      plotData,
-      rangeY,
-      xScale,
-      yScale,
-      xAxisPath,
-      xAxisTicks,
-      yAxisTicks,
-      valueIsValid,
-    } = usePlot(data, activeVariable, height, width, margin);
+    const { plotData, rangeY, xScale, yScale, valueIsValid } = usePlot(
+      data,
+      activeVariable,
+      height,
+      width,
+      margin
+    );
 
-    const { varUnit, valueText, dateText } = usePlotFormatter(activeVariable);
+    const { valueText, dateText } = usePlotFormatter(activeVariable);
 
     const viewBox = computed(() => `0 0 ${width.value} ${height.value}`);
 
@@ -287,12 +247,8 @@ export default {
       forecastVars,
       plotData,
       activeVariable,
-      xAxisPath,
-      xAxisTicks,
-      yAxisTicks,
       dotColor,
       valueTextColor,
-      varUnit,
       isHovered,
       hoveredBar,
       handleMouseMove,
@@ -314,10 +270,4 @@ svg
 .valueText
   font-size: 1.2rem
   text-shadow: 0 0 0.6rem #222
-.xAxisText
-  font-size: 1.4rem
-.yAxisText
-  font-size: 1rem
-.yAxisUnit
-  font-size: 0.8rem
 </style>
