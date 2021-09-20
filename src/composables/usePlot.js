@@ -89,7 +89,8 @@ const usePlot = (data, varName, height, width, margin) => {
   });
 
   const yAxisTicks = computed(() => {
-    const ticks = yScale.value.ticks(4);
+    const ticks =
+      varName.value !== "rain" ? yScale.value.ticks(4) : [0, 0.33, 0.67, 1];
 
     return ticks.map((y) => {
       const transform = `translate(0,${yScale.value(y)})`;
