@@ -89,17 +89,17 @@
           v-if="activeVariable !== 'rain'"
           :fill="dotColor"
           stroke="none"
-          r="0.4rem"
+          r="6"
         ></circle>
         <text
-          y="-0.6rem"
+          y="-10"
           :fill="valueTextColor"
           stroke="none"
           class="valueText"
           text-anchor="middle"
         ></text>
         <text
-          y="-1.8rem"
+          y="-30"
           fill="#ddd"
           stroke="none"
           class="dateText"

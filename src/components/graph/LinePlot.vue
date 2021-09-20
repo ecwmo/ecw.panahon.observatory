@@ -83,8 +83,8 @@ export default {
 
     watch([isHovered], () => {
       const line = d3.select(linePlotEl.value);
-      const strokeOpacity = isHovered.value ? null : "0.5";
-      const fillOpacity = isHovered.value ? "0.25" : "0.1";
+      const strokeOpacity = isHovered.value ? "0.5" : null;
+      const fillOpacity = isHovered.value ? "0.1" : "0.25";
 
       line
         .attr("stroke-opacity", strokeOpacity)
