@@ -3,7 +3,7 @@
     "name": "wpd",
     "name2": "wndPow",
     "units": "MW",
-    "title": "WIND ENERGY",
+    "title": "WIND POWER",
     "stroke": "#6EE7B7",
     "fill": "#D1FAE5",
     "dotColor": "#34D399"
@@ -12,7 +12,7 @@
     "name": "ppv",
     "name2": "solPow",
     "units": "MW",
-    "title": "SOLAR ENERGY",
+    "title": "SOLAR POWER",
     "stroke": "#FBBF24",
     "fill": "#FDE68A",
     "dotColor": "#F59E0B"
