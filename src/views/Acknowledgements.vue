@@ -1,17 +1,5 @@
 <template>
-  <div
-    class="
-      text-base
-      md:text-xl
-      bg-gray-100
-      text-gray-800
-      p-4
-      m-0
-      md:py-8 md:px-16 md:my-12 md:mx-24
-      rounded-lg
-      space-y-6
-    "
-  >
+  <div class="text-base md:text-xl p-4 m-0 md:px-16 md:my-8 md:mx-24 space-y-6">
     <p>
       In the spirit of over 155 years of service through science, we at the
       Manila Observatory are responding to the
@@ -69,10 +57,10 @@
         mx-4
         md:mx-8
         p-4
-        md:p-8
-        border-4 border-dashed
-        text-gray-600
-        border-gray-400
+        md:p-6
+        border
+        text-gray-100
+        border-gray-500
       "
     >
       “We are not without hope. We have this decade to set things right. And we
