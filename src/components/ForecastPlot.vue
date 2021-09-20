@@ -1,6 +1,15 @@
 <template>
   <div class="flex flex-col w-full justify-center">
-    <nav class="text-lg font-extralight border-b-2 mt-4 flex justify-start">
+    <nav
+      class="
+        text-lg
+        font-extralight
+        border-b border-grey-800
+        mt-4
+        flex
+        justify-start
+      "
+    >
       <a
         v-for="v in forecastVars"
         :key="v.name"
