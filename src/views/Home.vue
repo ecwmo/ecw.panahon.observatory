@@ -69,9 +69,9 @@
         model-caption
       "
     >
-      <span class="font-bold">DISCLAIMER</span>: This website contains
-      experimental forecasts for research purposes. For official updates and
-      warnings, please refer to PAGASA and other government agencies.
+      <span class="font-bold">DISCLAIMER</span>: These are experimental
+      forecasts for research purposes. For official updates and warnings, please
+      refer to PAGASA and other government agencies.
     </div>
   </div>
 </template>
