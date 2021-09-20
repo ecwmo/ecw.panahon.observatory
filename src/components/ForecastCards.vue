@@ -7,6 +7,7 @@
         :title="variableTitle(w.title, w.units)"
         :data="w.data"
         :icon="w.icon"
+        :name="w.name"
         @click="$emit('setActiveVariable', w.name)"
         :class="[
           activeVariable === w.name
@@ -22,6 +23,7 @@
         :title="variableTitle(w.title, w.units)"
         :data="w.data"
         :icon="w.icon"
+        :name="w.name"
         @click="$emit('setActiveVariable', w.name)"
         :class="[
           activeVariable === w.name
