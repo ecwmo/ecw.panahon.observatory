@@ -1,78 +1,73 @@
 <template>
-  <div
-    id="main"
-    class="w-full flex flex-col p-4 md:p-6 bg-gray-700 text-gray-200"
-  >
-    <div class="flex flex-col-reverse items-center md:flex-row w-full">
-      <transition name="fade">
-        <div class="flex" v-show="!extendedMode">
-          <!-- sidebar -->
-          <div class="flex flex-col items-center mt-8 md:mt-6">
-            <ForecastSidebar
-              :forecastVars="forecastVars"
-              :activeVariable="activeVariable"
-              :activeImgType="activeImgType"
-              @set-active-variable="activeVariable = $event"
-              @set-active-img-type="activeImgType = $event"
-            />
-          </div>
-          <!-- map -->
-          <div class="flex flex-col">
-            <ForecastImg
-              :varName="activeVariable"
-              :day="activeDay"
-              :imgType="activeImgType"
-            />
-          </div>
-        </div>
-      </transition>
-      <!-- info panel -->
-      <div class="flex flex-grow flex-col items-start">
-        <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
-        <span class="text-3xl mb-3">Clean Power • Weather Forecast</span>
-        <SiteDropDown :forecastData="forecastDailyData" v-model="activeSite" />
-        <ForecastNavTab
-          :activeDay="activeDay"
-          @set-active-day="activeDay = $event"
-        />
-        <transition name="fade">
-          <ForecastCards
-            :forecastData="forecastDailyData"
-            :activeSite="activeSite"
-            :activeDay="activeDay"
+  <div class="flex flex-col-reverse items-center md:flex-row w-full">
+    <transition name="fade">
+      <div class="flex" v-show="!extendedMode">
+        <!-- sidebar -->
+        <div class="flex flex-col items-center mt-8 md:mt-6">
+          <ForecastSidebar
+            :forecastVars="forecastVars"
             :activeVariable="activeVariable"
+            :activeImgType="activeImgType"
             @set-active-variable="activeVariable = $event"
-            v-show="!extendedMode"
+            @set-active-img-type="activeImgType = $event"
           />
-        </transition>
-      </div>
-    </div>
-    <!-- Graph -->
-    <transition name="slide-fade">
-      <div class="w-full flex justify-center pt-8" v-show="extendedMode">
-        <ForecastPlot :data="activeSiteHourlyData" />
+        </div>
+        <!-- map -->
+        <div class="flex flex-col">
+          <ForecastImg
+            :varName="activeVariable"
+            :day="activeDay"
+            :imgType="activeImgType"
+          />
+        </div>
       </div>
     </transition>
-    <!-- Disclaimer -->
-    <div
-      class="
-        flex
-        w-full
-        pt-8
-        italic
-        text-xs
-        font-medium
-        text-justify
-        self-center
-        break-words
-        md:break-normal
-        model-caption
-      "
-    >
-      <span class="font-bold">DISCLAIMER</span>: These are experimental
-      forecasts for research purposes. For official updates and warnings, please
-      refer to PAGASA and other government agencies.
+    <!-- info panel -->
+    <div class="flex flex-grow flex-col items-start">
+      <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
+      <span class="text-3xl mb-3">Clean Power • Weather Forecast</span>
+      <SiteDropDown :forecastData="forecastDailyData" v-model="activeSite" />
+      <ForecastNavTab
+        :activeDay="activeDay"
+        @set-active-day="activeDay = $event"
+      />
+      <transition name="fade">
+        <ForecastCards
+          :forecastData="forecastDailyData"
+          :activeSite="activeSite"
+          :activeDay="activeDay"
+          :activeVariable="activeVariable"
+          @set-active-variable="activeVariable = $event"
+          v-show="!extendedMode"
+        />
+      </transition>
     </div>
+  </div>
+  <!-- Graph -->
+  <transition name="slide-fade">
+    <div class="w-full flex justify-center pt-8" v-show="extendedMode">
+      <ForecastPlot :data="activeSiteHourlyData" />
+    </div>
+  </transition>
+  <!-- Disclaimer -->
+  <div
+    class="
+      flex
+      w-full
+      pt-8
+      italic
+      text-xs
+      font-medium
+      text-justify
+      self-center
+      break-words
+      md:break-normal
+      model-caption
+    "
+  >
+    <span class="font-bold">DISCLAIMER</span>: These are experimental forecasts
+    for research purposes. For official updates and warnings, please refer to
+    PAGASA and other government agencies.
   </div>
 </template>
 
