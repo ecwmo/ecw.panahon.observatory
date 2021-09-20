@@ -2,11 +2,24 @@
   <header>
     <!-- Navbar goes here -->
     <nav
-      class="flex flex-wrap justify-between items-center bg-white shadow-lg p-4"
+      class="
+        flex flex-wrap
+        justify-between
+        items-center
+        bg-white
+        shadow-lg
+        px-2
+        md:px-6
+        py-2
+      "
     >
       <div class="flex items-center flex-no-shrink mr-6">
-        <img src="@/assets/logo.png" alt="Logo" class="h-8 w-8 mr-2" />
-        <span class="font-semibold text-gray-900 text-lg"
+        <img
+          src="@/assets/logo.png"
+          alt="Logo"
+          class="md:h-8 md:w-8 md:h-10 md:w-10 mr-2"
+        />
+        <span class="font-semibold text-gray-900 text-lg md:text-2xl"
           >Manila Observatory</span
         >
       </div>
@@ -42,16 +55,32 @@
           "
           :class="open ? 'absolute right-0 bg-white shadow-lg' : ''"
         >
+          <router-link
+            v-for="tab in tabs"
+            :key="tab.label"
+            :to="tab.to"
+            class="
+              p-2
+              font-semibold
+              text-gray-500
+              hover:text-blue-500
+              transition
+              duration-300
+            "
+            >{{ tab.label }}</router-link
+          >
           <a
-            v-for="(tab, i) in tabs"
+            v-for="tab in tabs2"
             :key="tab.label"
             :href="tab.href"
-            class="p-2 font-semibold"
-            :class="[
-              activeTab === i
-                ? 'text-gray-900 border-b-4 border-gray-900'
-                : 'text-gray-500 hover:text-blue-500 transition duration-300',
-            ]"
+            class="
+              p-2
+              font-semibold
+              text-gray-500
+              hover:text-blue-500
+              transition
+              duration-300
+            "
             >{{ tab.label }}</a
           >
         </div>
@@ -69,15 +98,22 @@ export default {
     const activeTab = ref(0);
 
     const tabs = [
-      { label: "Weather", href: "/" },
-      { label: "About Us", href: "#" },
-      { label: "Acknowledgements", href: "#" },
+      { label: "Power • Weather", to: "/" },
+      { label: "Acknowledgements", to: "/acknowledgements" },
+    ];
+
+    const tabs2 = [
       { label: "Live Weather Data", href: "https://panahon.observatory.ph" },
     ];
 
     const toggle = () => (open.value = !open.value);
 
-    return { tabs, activeTab, open, toggle };
+    return { tabs, tabs2, activeTab, open, toggle };
   },
 };
 </script>
+
+<style lang="sass" scoped>
+.router-link-active
+  @apply text-gray-900 border-b-2 border-gray-900
+</style>
