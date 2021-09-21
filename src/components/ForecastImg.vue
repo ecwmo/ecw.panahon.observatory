@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-96">
+  <div class="flex flex-col">
     <img alt="Map" :src="forecastImg" />
     <div class="h-12">
       <img alt="Colobar" :src="forecastImgCmap" class="transform scale-50" />
@@ -30,3 +30,12 @@ export default {
   },
 };
 </script>
+
+<style lang="sass" scoped>
+div
+  width: 480px;
+  @media (max-width: 768px)
+    width: 420px;
+  @media (max-width: 640px)
+    width: 360px;
+</style>

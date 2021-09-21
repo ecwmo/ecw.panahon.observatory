@@ -1,25 +1,26 @@
 <template>
   <div class="flex flex-col-reverse items-center md:flex-row w-full">
     <transition name="fade">
-      <div class="flex" v-show="!extendedMode">
+      <div
+        class="relative flex h-full mt-8 ml-8 md:ml-0 md:mt-0"
+        v-show="!extendedMode"
+      >
         <!-- sidebar -->
-        <div class="flex flex-col items-center mt-8 md:mt-6">
-          <ForecastSidebar
-            :forecastVars="forecastVars"
-            :activeVariable="activeVariable"
-            :activeImgType="activeImgType"
-            @set-active-variable="activeVariable = $event"
-            @set-active-img-type="activeImgType = $event"
-          />
-        </div>
+        <ForecastSidebar
+          class="absolute z-10 mt-4 md:mt-8"
+          :forecastVars="forecastVars"
+          :activeVariable="activeVariable"
+          :activeImgType="activeImgType"
+          @set-active-variable="activeVariable = $event"
+          @set-active-img-type="activeImgType = $event"
+        />
         <!-- map -->
-        <div class="flex flex-col">
-          <ForecastImg
-            :varName="activeVariable"
-            :day="activeDay"
-            :imgType="activeImgType"
-          />
-        </div>
+        <ForecastImg
+          :varName="activeVariable"
+          :day="activeDay"
+          :imgType="activeImgType"
+          class="relative ml-10 md:-mt-8"
+        />
       </div>
     </transition>
     <!-- info panel -->
