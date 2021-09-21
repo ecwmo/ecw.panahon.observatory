@@ -2,10 +2,12 @@
   <div class="flex flex-col w-full justify-center">
     <nav
       class="
-        text-lg
+        text-sm
+        md:text-lg
         font-extralight
         border-b border-grey-800
-        mt-4
+        mt-2
+        md:mt-4
         flex
         justify-start
       "
@@ -13,12 +15,12 @@
       <a
         v-for="v in forecastVars"
         :key="v.name"
-        class="py-2 px-4 text-center"
+        class="p-1.5 md:py-2 md:px-4 text-center"
         href="#"
         @click.prevent="activeVariable = v.name"
         :class="[
           activeVariable === v.name
-            ? 'bg-gray-500 font-bold'
+            ? 'bg-gray-500 font-semibold'
             : 'hover:bg-gray-500',
         ]"
         >{{ v.title }}</a
