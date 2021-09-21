@@ -8,10 +8,14 @@
 </template>
 
 <script>
+import { useQueryProvider } from "vue-query";
 import Navbar from "@/components/Navbar.vue";
 export default {
   components: {
     Navbar,
+  },
+  setup() {
+    useQueryProvider();
   },
 };
 </script>

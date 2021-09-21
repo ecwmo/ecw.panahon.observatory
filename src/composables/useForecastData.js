@@ -1,47 +1,45 @@
-import { ref, onMounted, computed } from "vue";
+import { computed } from "vue";
 import { format } from "date-fns";
 import axios from "axios";
+// import useSWRV from "swrv";
+import { useQuery } from "vue-query";
 
 const useForecastData = () => {
-  const forecastHourlyData = ref([]);
-  const forecastDailyData = ref([]);
-  const forecastTimestamp = ref(Date.now());
+  const url = "https://panahon.observatory.ph/api/forecast.php";
 
-  const fetchForecast = async () => {
-    try {
-      const url = "https://panahon.observatory.ph/api/forecast.php";
-      const _forecastData = await axios.get(url).then(({ data }) => data);
-      forecastDailyData.value = Object.keys(_forecastData).map((k) => {
-        const {
-          forecast: { day },
-        } = _forecastData[k];
+  const fetcher = () => axios.get(url).then(({ data }) => data);
 
-        return { ..._forecastData[k], forecast: day };
-      });
-      forecastHourlyData.value = Object.keys(_forecastData).map((k) => {
-        const {
-          forecast: { hr },
-        } = _forecastData[k];
+  const { data } = useQuery("forecastData", fetcher);
 
-        return { ..._forecastData[k], forecast: hr };
-      });
-      forecastTimestamp.value = new Date(
-        forecastDailyData.value[0].forecast[0].timestamp
-      );
-    } catch (err) {
-      if (err.response) {
-        // client received an error response (5xx, 4xx)
-        console.log("Server Error:", err);
-      } else if (err.request) {
-        // client never received a response, or request never left
-        console.log("Network Error:", err);
-      } else {
-        console.log("Client Error:", err);
-      }
-    }
-  };
+  const forecastDailyData = computed(() =>
+    data.value !== undefined
+      ? Object.keys(data.value).map((k) => {
+          const {
+            forecast: { day },
+          } = data.value[k];
 
-  onMounted(fetchForecast);
+          return { ...data.value[k], forecast: day };
+        })
+      : []
+  );
+
+  const forecastHourlyData = computed(() =>
+    data.value !== undefined
+      ? Object.keys(data.value).map((k) => {
+          const {
+            forecast: { hr },
+          } = data.value[k];
+
+          return { ...data.value[k], forecast: hr };
+        })
+      : []
+  );
+
+  const forecastTimestamp = computed(() =>
+    data.value !== undefined
+      ? new Date(forecastDailyData.value[0].forecast[0].timestamp)
+      : Date.now()
+  );
 
   const forecastDateStr = computed(() =>
     format(forecastTimestamp.value, "d MMM yyyy")
