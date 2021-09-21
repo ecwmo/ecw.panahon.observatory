@@ -1,7 +1,6 @@
 import { computed } from "vue";
 import { format } from "date-fns";
 import axios from "axios";
-// import useSWRV from "swrv";
 import { useQuery } from "vue-query";
 
 const useForecastData = () => {
