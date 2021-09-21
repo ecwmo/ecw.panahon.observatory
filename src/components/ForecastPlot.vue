@@ -131,14 +131,6 @@ export default {
     data: {
       required: true,
     },
-    width: {
-      default: screen.width,
-      type: Number,
-    },
-    height: {
-      default: screen.width * 0.2,
-      type: Number,
-    },
   },
   components: {
     XAxis,
@@ -152,8 +144,17 @@ export default {
     const hoveredBar = ref();
 
     const margin = ref({ top: 40, right: 30, bottom: 30, left: 40 });
-    const { data, width, height } = toRefs(props);
+
+    const { data } = toRefs(props);
     const isHovered = ref(false);
+
+    const width = computed(() => screen.width);
+
+    const height = computed(() => {
+      if (screen.width < 640) return screen.width * 0.6;
+      else if (screen.width < 768) return screen.width * 0.3;
+      return screen.width * 0.2;
+    });
 
     const { plotData, rangeY, xScale, yScale, valueIsValid } = usePlot(
       data,
@@ -240,6 +241,8 @@ export default {
     };
 
     return {
+      width,
+      height,
       margin,
       viewBox,
       stroke,
