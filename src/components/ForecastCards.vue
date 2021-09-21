@@ -40,23 +40,19 @@ import { toRefs } from "vue";
 
 import ForecastCard from "@/components/ForecastCard.vue";
 
-import useForecastInfo from "@/composables/useForecastInfo";
+import useForecastCardData from "@/composables/useForecastCardData";
 
 export default {
   name: "ForecastCards",
-  props: ["forecastData", "activeSite", "activeDay", "activeVariable"],
+  props: ["forecastData", "activeVariable"],
   emits: ["setActiveVariable"],
   components: {
     ForecastCard,
   },
   setup(props) {
-    const { forecastData, activeSite, activeDay } = toRefs(props);
+    const { forecastData } = toRefs(props);
 
-    const { cleanEnergyData, weatherData } = useForecastInfo(
-      forecastData,
-      activeSite,
-      activeDay
-    );
+    const { cleanEnergyData, weatherData } = useForecastCardData(forecastData);
 
     const variableTitle = (title, units = "") => {
       if (units !== "") return `${title} (${units})`;

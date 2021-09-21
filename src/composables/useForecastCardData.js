@@ -5,19 +5,17 @@ import thermometerIcon from "@/assets/icons/thermometer.png";
 import windIcon from "@/assets/icons/wind.png";
 import rainCloudIcon from "@/assets/icons/rain-cloud.png";
 
-const useForecastInfo = (forecastData, activeSite, activeDay) => {
+const useForecastCardData = (forecastData) => {
   const cleanEnergyData = computed(() => {
-    let data = forecastData.value.filter((d) => d.name === activeSite.value);
-    if (data.length > 0) {
-      data = data[0].forecast[activeDay.value];
+    if (forecastData.value !== undefined) {
       return [
         {
           name: "wpd",
           units: "MW",
           title: "WIND POWER",
           data: [
-            { name: "Ave", value: data.wndPow.toFixed(1) },
-            { name: "Max", value: data.wndPowMax.toFixed(1) },
+            { name: "Ave", value: forecastData.value.wndPow.toFixed(1) },
+            { name: "Max", value: forecastData.value.wndPowMax.toFixed(1) },
           ],
           icon: turbineIcon,
         },
@@ -26,8 +24,8 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
           units: "MW",
           title: "SOLAR POWER",
           data: [
-            { name: "Ave", value: data.solPow.toFixed(1) },
-            { name: "Max", value: data.solPowMax.toFixed(1) },
+            { name: "Ave", value: forecastData.value.solPow.toFixed(1) },
+            { name: "Max", value: forecastData.value.solPowMax.toFixed(1) },
           ],
           icon: sunIcon,
         },
@@ -38,17 +36,15 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
   });
 
   const weatherData = computed(() => {
-    let data = forecastData.value.filter((d) => d.name === activeSite.value);
-    if (data.length > 0) {
-      data = data[0].forecast[activeDay.value];
+    if (forecastData.value !== undefined) {
       return [
         {
           name: "temp",
           units: "°C",
           title: "TEMPERATURE",
           data: [
-            { name: "Min", value: data.tempMin.toFixed(1) },
-            { name: "Max", value: data.tempMax.toFixed(1) },
+            { name: "Min", value: forecastData.value.tempMin.toFixed(1) },
+            { name: "Max", value: forecastData.value.tempMax.toFixed(1) },
           ],
           icon: thermometerIcon,
         },
@@ -57,15 +53,15 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
           units: "kph",
           title: "WIND SPEED",
           data: [
-            { name: "Min", value: data.wspdMin.toFixed(1) },
-            { name: "Max", value: data.wspdMax.toFixed(1) },
+            { name: "Min", value: forecastData.value.wspdMin.toFixed(1) },
+            { name: "Max", value: forecastData.value.wspdMax.toFixed(1) },
           ],
           icon: windIcon,
         },
         {
-          name: "rainchance",
+          name: "rain",
           title: "RAIN CHANCE",
-          data: [{ value: data.rainChanceStr }],
+          data: [{ value: forecastData.value.rainChanceStr }],
           icon: rainCloudIcon,
         },
       ];
@@ -79,4 +75,4 @@ const useForecastInfo = (forecastData, activeSite, activeDay) => {
   };
 };
 
-export default useForecastInfo;
+export default useForecastCardData;

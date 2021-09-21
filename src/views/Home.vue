@@ -26,16 +26,14 @@
     <div class="flex flex-grow flex-col items-start">
       <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
       <span class="text-3xl mb-3">Clean Power • Weather Forecast</span>
-      <SiteDropDown :forecastData="forecastDailyData" v-model="activeSite" />
+      <SiteDropDown :sites="forecastSites" v-model="activeSite" />
       <ForecastNavTab
         :activeDay="activeDay"
         @set-active-day="activeDay = $event"
       />
       <transition name="fade">
         <ForecastCards
-          :forecastData="forecastDailyData"
-          :activeSite="activeSite"
-          :activeDay="activeDay"
+          :forecastData="activeSiteDayData"
           :activeVariable="activeVariable"
           @set-active-variable="activeVariable = $event"
           v-show="!extendedMode"
@@ -62,7 +60,6 @@
       self-center
       break-words
       md:break-normal
-      model-caption
     "
   >
     <span class="font-bold">DISCLAIMER</span>: These are experimental forecasts
@@ -81,6 +78,8 @@ import ForecastNavTab from "@/components/ForecastNavTab.vue";
 import ForecastCards from "@/components/ForecastCards.vue";
 import ForecastPlot from "@/components/ForecastPlot.vue";
 
+import _forecastVars from "@/data/forecastVars.json";
+
 import useForecastData from "@/composables/useForecastData";
 
 export default {
@@ -94,32 +93,6 @@ export default {
     ForecastPlot,
   },
   setup() {
-    const forecastVars = [
-      {
-        name: "wpd",
-        units: "MW",
-        title: "WIND POWER",
-      },
-      {
-        name: "ppv",
-        units: "MW",
-        title: "SOLAR POWER",
-      },
-      {
-        name: "temp",
-        units: "°C",
-        title: "TEMPERATURE",
-      },
-      {
-        name: "wind",
-        units: "kph",
-        title: "WIND SPEED",
-      },
-      {
-        name: "rainchance",
-        title: "RAIN CHANCE",
-      },
-    ];
     const activeSite = ref("NCR");
     const activeDay = ref(0);
     const activeVariable = ref("wpd");
@@ -128,8 +101,29 @@ export default {
     const { forecastDailyData, forecastHourlyData, forecastDateStr } =
       useForecastData();
 
+    const activeSiteDayData = computed(() => {
+      const data = forecastDailyData.value.find(
+        (d) => d.name === activeSite.value
+      );
+      if (data !== undefined) return data.forecast[activeDay.value];
+      return data;
+    });
+
     const activeSiteHourlyData = computed(() =>
       forecastHourlyData.value.find((d) => d.name === activeSite.value)
+    );
+
+    const forecastVars = computed(() =>
+      _forecastVars.map((d) => {
+        if (d.name === "rain") d.title = "RAIN CHANCE";
+        return d;
+      })
+    );
+
+    const forecastSites = computed(() =>
+      forecastDailyData.value.map(({ name }) => ({
+        name,
+      }))
     );
 
     const extendedMode = computed(() => activeDay.value > 1);
@@ -139,9 +133,10 @@ export default {
       activeDay,
       activeVariable,
       activeImgType,
+      activeSiteDayData,
       activeSiteHourlyData,
       forecastVars,
-      forecastDailyData,
+      forecastSites,
       forecastDateStr,
       extendedMode,
     };

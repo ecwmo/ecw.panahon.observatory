@@ -4,8 +4,8 @@
     :value="modelValue"
     @input="$emit('update:modelValue', $event.target.value)"
   >
-    <option v-for="fd in forecastData" :key="fd.name">
-      {{ fd.name }}
+    <option v-for="s in sites" :key="s.name">
+      {{ s.name }}
     </option>
   </select>
 </template>
@@ -13,7 +13,7 @@
 <script>
 export default {
   name: "SiteDropDown",
-  props: ["forecastData", "modelValue"],
+  props: ["sites", "modelValue"],
   emits: ["update:modelValue"],
 };
 </script>
