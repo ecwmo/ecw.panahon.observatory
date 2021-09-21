@@ -67,6 +67,7 @@
               transition
               duration-300
             "
+            @click="open = false"
             >{{ tab.label }}</router-link
           >
           <a
@@ -91,6 +92,7 @@
 
 <script>
 import { ref } from "vue";
+
 export default {
   name: "Navbar",
   setup() {
