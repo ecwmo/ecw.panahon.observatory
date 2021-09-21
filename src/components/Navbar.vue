@@ -17,7 +17,7 @@
         <img
           src="@/assets/logo.png"
           alt="Logo"
-          class="md:h-8 md:w-8 md:h-10 md:w-10 mr-2"
+          class="h-8 w-8 md:h-10 md:w-10 mr-2"
         />
         <span class="font-semibold text-gray-900 text-lg md:text-2xl"
           >Manila Observatory</span
