@@ -75,7 +75,7 @@
 
 <script>
 import smLogo from "@/assets/logos/SM_Prime.png";
-import ayalaLogo from "@/assets/logos/ayala.png";
+import acEnergyLogo from "@/assets/logos/AC_Energy.png";
 import alphalandLogo from "@/assets/logos/alphaland.png";
 import sanMiguelLogo from "@/assets/logos/san_miguel.png";
 import mvpLogo from "@/assets/logos/mvp.png";
@@ -92,27 +92,27 @@ export default {
           {
             name: "SM Group",
             logo: smLogo,
-            logoClass: "h-28 p-1.5",
+            logoClass: "h-28 p-0.5",
           },
           {
             name: "Ayala Group",
-            logo: ayalaLogo,
-            logoClass: "h-20 p-1.5 bg-white",
+            logo: acEnergyLogo,
+            logoClass: "h-20 bg-white",
           },
           {
             name: "RVO Group",
             logo: alphalandLogo,
-            logoClass: "h-20 p-1.5 bg-white",
+            logoClass: "h-20 p-0.5 bg-white",
           },
           {
             name: "RSA Group",
             logo: sanMiguelLogo,
-            logoClass: "h-24 p-1.5",
+            logoClass: "h-24 p-0.5",
           },
           {
             name: "MVP Group",
             logo: mvpLogo,
-            logoClass: "h-28 p-1.5 bg-white",
+            logoClass: "h-28 p-0.5 bg-white",
           },
         ],
       },
@@ -128,7 +128,7 @@ export default {
           {
             name: "Shell Philippines",
             logo: shellLogo,
-            logoClass: "h-24 bg-white px-1.5",
+            logoClass: "h-24 bg-white px-0.5",
           },
         ],
       },
