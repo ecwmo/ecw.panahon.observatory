@@ -39,7 +39,7 @@
     <div>
       <template v-for="partner in partners" :key="partner.name">
         <div class="text-2xl font-bold">{{ `${partner.title}:` }}</div>
-        <ul class="p-4 flex flex-wrap items-center gap-8">
+        <ul class="p-4 flex flex-wrap items-center gap-5">
           <li v-for="p in partner.list" :key="p.name" class="flex">
             <img
               v-if="p.logo"
@@ -115,7 +115,7 @@ export default {
           {
             name: "Ayala Group",
             logo: acEnergyLogo,
-            logoClass: "h-20 bg-white",
+            logoClass: "h-24 bg-white",
           },
           {
             name: "RVO Group",
@@ -125,7 +125,7 @@ export default {
           {
             name: "RSA Group",
             logo: sanMiguelLogo,
-            logoClass: "h-24 p-0.5",
+            logoClass: "h-20 p-0.5",
           },
           {
             name: "MVP Group",
@@ -146,7 +146,7 @@ export default {
           {
             name: "Shell Philippines",
             logo: shellLogo,
-            logoClass: "h-24 bg-white px-1",
+            logoClass: "h-24 bg-white p-3",
           },
         ],
       },
