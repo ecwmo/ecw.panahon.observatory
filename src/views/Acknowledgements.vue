@@ -92,7 +92,7 @@ export default {
           {
             name: "SM Group",
             logo: smLogo,
-            logoClass: "h-28 p-0.5",
+            logoClass: "h-28 p-2.5 bg-white",
           },
           {
             name: "Ayala Group",
