@@ -52,10 +52,11 @@
         </ul>
       </template>
     </div>
-    <p
+    <blockquote
       class="
+        relative
         italic
-        font-semibold
+        font-serif
         mx-4
         md:mx-8
         p-4
@@ -65,11 +66,28 @@
         border-gray-500
       "
     >
-      “We are not without hope. We have this decade to set things right. And we
-      know we are not alone in heeding the call for all hands to be on deck, to
-      batten down the hatches, so to speak, for the big storm that is about to
-      define who we are for generations to come.”
-    </p>
+      <span
+        class="
+          absolute
+          text-6xl
+          md:text-7xl
+          opacity-30
+          top-0
+          left-0
+          mt-1
+          ml-0.5
+          md:mt-2 md:ml-1.5
+        "
+        aria-hidden="true"
+        >&ldquo;</span
+      >
+      <p class="text-justify">
+        We are not without hope. We have this decade to set things right. And we
+        know we are not alone in heeding the call for all hands to be on deck,
+        to batten down the hatches, so to speak, for the big storm that is about
+        to define who we are for generations to come.
+      </p>
+    </blockquote>
   </div>
 </template>
 
