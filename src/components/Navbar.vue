@@ -105,7 +105,7 @@ export default {
     ];
 
     const tabs2 = [
-      { label: "Live Weather Data", href: "https://panahon.observatory.ph" },
+      { label: "Station Data", href: "https://panahon.observatory.ph" },
     ];
 
     const toggle = () => (open.value = !open.value);
