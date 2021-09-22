@@ -112,7 +112,7 @@ export default {
           {
             name: "MVP Group",
             logo: mvpLogo,
-            logoClass: "h-28 p-0.5 bg-white",
+            logoClass: "h-28 p-1.5 bg-white",
           },
         ],
       },
@@ -123,12 +123,12 @@ export default {
           {
             name: "La Filipina Uy Gongco",
             logo: lfugGOCLogo,
-            logoClass: "h-24 bg-white",
+            logoClass: "h-24 bg-white p-1.5",
           },
           {
             name: "Shell Philippines",
             logo: shellLogo,
-            logoClass: "h-24 bg-white px-0.5",
+            logoClass: "h-24 bg-white px-1",
           },
         ],
       },
