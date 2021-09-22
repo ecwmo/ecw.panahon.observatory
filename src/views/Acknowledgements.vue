@@ -37,18 +37,20 @@
       our communities. May God return their magnanimity many times over.
     </p>
     <div>
-      <div class="text-2xl font-bold">Platinum Partners:</div>
-      <ul class="px-12 py-4">
-        <li v-for="p in platinumPartners" :key="p" class="list-disc">
-          {{ p }}
-        </li>
-      </ul>
-      <div class="text-2xl font-bold">Gold Partners:</div>
-      <ul class="px-12 py-4">
-        <li v-for="p in goldPartners" :key="p" class="list-disc">
-          {{ p }}
-        </li>
-      </ul>
+      <template v-for="partner in partners" :key="partner.name">
+        <div class="text-2xl font-bold">{{ `${partner.title}:` }}</div>
+        <ul class="p-4 flex flex-wrap items-center gap-8">
+          <li v-for="p in partner.list" :key="p.name" class="flex">
+            <img
+              v-if="p.logo"
+              :src="p.logo"
+              :alt="p.name"
+              :class="p.logoClass"
+            />
+            <span v-else>{{ p.name }}</span>
+          </li>
+        </ul>
+      </template>
     </div>
     <p
       class="
@@ -72,21 +74,68 @@
 </template>
 
 <script>
+import smLogo from "@/assets/logos/SM_Prime.png";
+import ayalaLogo from "@/assets/logos/ayala.png";
+import alphalandLogo from "@/assets/logos/alphaland.png";
+import sanMiguelLogo from "@/assets/logos/san_miguel.png";
+import mvpLogo from "@/assets/logos/mvp.png";
+import lfugGOCLogo from "@/assets/logos/LFUG_GOC.png";
+import shellLogo from "@/assets/logos/shell.png";
+
 export default {
   setup() {
-    const platinumPartners = [
-      "SM Group",
-      "Ayala Group",
-      "RVO Group",
-      "RSO Group",
-      "MVP Group",
+    const partners = [
+      {
+        name: "platinum",
+        title: "Platinum Partners",
+        list: [
+          {
+            name: "SM Group",
+            logo: smLogo,
+            logoClass: "h-28 p-1.5",
+          },
+          {
+            name: "Ayala Group",
+            logo: ayalaLogo,
+            logoClass: "h-20 p-1.5 bg-white",
+          },
+          {
+            name: "RVO Group",
+            logo: alphalandLogo,
+            logoClass: "h-20 p-1.5 bg-white",
+          },
+          {
+            name: "RSA Group",
+            logo: sanMiguelLogo,
+            logoClass: "h-24 p-1.5",
+          },
+          {
+            name: "MVP Group",
+            logo: mvpLogo,
+            logoClass: "h-28 p-1.5 bg-white",
+          },
+        ],
+      },
+      {
+        name: "gold",
+        title: "Gold Partners",
+        list: [
+          {
+            name: "La Filipina Uy Gongco",
+            logo: lfugGOCLogo,
+            logoClass: "h-24 bg-white",
+          },
+          {
+            name: "Shell Philippines",
+            logo: shellLogo,
+            logoClass: "h-24 bg-white px-1.5",
+          },
+        ],
+      },
     ];
 
-    const goldPartners = ["La Filipina Uy Gongco", "Shell Philippines"];
-
     return {
-      platinumPartners,
-      goldPartners,
+      partners,
     };
   },
 };
