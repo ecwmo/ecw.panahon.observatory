@@ -23,7 +23,6 @@
         />
       </div>
     </transition>
-    <!-- info panel -->
     <div class="flex flex-grow flex-col items-start">
       <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
       <span class="text-3xl mb-3">Clean Power • Weather Outlook</span>
@@ -32,23 +31,26 @@
         :activeDay="activeDay"
         @set-active-day="activeDay = $event"
       />
+      <!-- info cards -->
       <transition name="fade">
         <ForecastCards
           :forecastData="activeSiteDayData"
           :activeVariable="activeVariable"
           @set-active-variable="activeVariable = $event"
-          v-show="!extendedMode"
+          v-if="!extendedMode"
+        />
+      </transition>
+      <!-- graph -->
+      <transition name="slide-fade">
+        <ForecastPlot
+          class="w-full flex justify-center pt-8"
+          :data="activeSiteHourlyData"
+          v-if="extendedMode"
         />
       </transition>
     </div>
   </div>
-  <!-- Graph -->
-  <transition name="slide-fade">
-    <div class="w-full flex justify-center pt-8" v-show="extendedMode">
-      <ForecastPlot :data="activeSiteHourlyData" />
-    </div>
-  </transition>
-  <!-- Disclaimer -->
+  <!-- disclaimer -->
   <div
     class="
       flex
@@ -70,7 +72,7 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, defineAsyncComponent } from "vue";
 import { format, addDays } from "date-fns";
 
 import ForecastSidebar from "@/components/ForecastSidebar.vue";
@@ -78,7 +80,6 @@ import ForecastImg from "@/components/ForecastImg.vue";
 import SiteDropDown from "@/components/SiteDropDown.vue";
 import ForecastNavTab from "@/components/ForecastNavTab.vue";
 import ForecastCards from "@/components/ForecastCards.vue";
-import ForecastPlot from "@/components/ForecastPlot.vue";
 
 import _forecastVars from "@/data/forecastVars.json";
 
@@ -92,7 +93,9 @@ export default {
     SiteDropDown,
     ForecastNavTab,
     ForecastCards,
-    ForecastPlot,
+    ForecastPlot: defineAsyncComponent(() =>
+      import("@/components/ForecastPlot.vue")
+    ),
   },
   setup() {
     const currentDate = Date.now();
