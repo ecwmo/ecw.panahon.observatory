@@ -1,6 +1,10 @@
 <template>
   <div class="flex flex-col-reverse items-center md:flex-row w-full">
-    <transition name="fade">
+    <transition
+      name="slide-x-fade"
+      enter-active-class="slide-x-fade-enter-active"
+      enter-from-class="slide-x-fade-enter-from"
+    >
       <div
         class="relative flex h-full mt-8 ml-8 md:ml-0 md:mt-0"
         v-show="!extendedMode"
@@ -31,21 +35,23 @@
         :activeDay="activeDay"
         @set-active-day="activeDay = $event"
       />
-      <!-- info cards -->
-      <transition name="fade">
+      <transition
+        name="slide-y-fade"
+        enter-active-class="slide-y-fade-enter-active"
+        enter-from-class="slide-y-fade-enter-from"
+      >
+        <!-- info cards -->
         <ForecastCards
           :forecastData="activeSiteDayData"
           :activeVariable="activeVariable"
           @set-active-variable="activeVariable = $event"
           v-if="!extendedMode"
         />
-      </transition>
-      <!-- graph -->
-      <transition name="slide-fade">
+        <!-- graph -->
         <ForecastPlot
           class="w-full flex justify-center pt-8"
           :data="activeSiteHourlyData"
-          v-if="extendedMode"
+          v-else
         />
       </transition>
     </div>
@@ -156,26 +162,18 @@ export default {
 };
 </script>
 
-<style>
-.fade-enter-active {
-  transition: opacity 0.6s ease-out;
-}
+<style lang="sass">
+.slide-x-fade-enter-active
+  transition: all 0.5s ease-out;
 
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
+.slide-x-fade-enter-from
+  transform: translateX(-30px);
   opacity: 0;
-}
 
-.slide-fade-enter-active {
+.slide-y-fade-enter-active
   transition: all 0.8s ease-out;
-}
 
-.slide-fade-enter-from {
+.slide-y-fade-enter-from
   transform: translateY(30px);
   opacity: 0;
-}
 </style>
