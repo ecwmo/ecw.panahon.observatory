@@ -26,7 +26,7 @@
     <!-- info panel -->
     <div class="flex flex-grow flex-col items-start">
       <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
-      <span class="text-3xl mb-3">Clean Power • Weather Forecast</span>
+      <span class="text-3xl mb-3">Clean Power • Weather Outlook</span>
       <SiteDropDown :sites="forecastSites" v-model="activeSite" />
       <ForecastNavTab
         :activeDay="activeDay"
