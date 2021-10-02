@@ -71,6 +71,7 @@
 
 <script>
 import { ref, computed } from "vue";
+import { format, addDays } from "date-fns";
 
 import ForecastSidebar from "@/components/ForecastSidebar.vue";
 import ForecastImg from "@/components/ForecastImg.vue";
@@ -94,13 +95,13 @@ export default {
     ForecastPlot,
   },
   setup() {
+    const currentDate = Date.now();
     const activeSite = ref("NCR");
     const activeDay = ref(0);
     const activeVariable = ref("wpd");
     const activeImgType = ref(0);
 
-    const { forecastDailyData, forecastHourlyData, forecastDateStr } =
-      useForecastData();
+    const { forecastDailyData, forecastHourlyData } = useForecastData();
 
     const activeSiteDayData = computed(() => {
       const data = forecastDailyData.value.find(
@@ -128,6 +129,13 @@ export default {
     );
 
     const extendedMode = computed(() => activeDay.value > 1);
+
+    const forecastDateStr = computed(() =>
+      format(
+        activeDay.value === 1 ? addDays(currentDate, 1) : currentDate,
+        "d MMM yyyy"
+      )
+    );
 
     return {
       activeSite,

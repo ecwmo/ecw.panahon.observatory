@@ -1,10 +1,10 @@
 import { computed } from "vue";
-import { format } from "date-fns";
 import axios from "axios";
 import { useQuery } from "vue-query";
 
 const useForecastData = () => {
   const url = "https://panahon.observatory.ph/api/forecast.php";
+  const curDate = new Date(Date.now());
 
   const fetcher = () => axios.get(url).then(({ data }) => data);
 
@@ -17,7 +17,14 @@ const useForecastData = () => {
             forecast: { day },
           } = data.value[k];
 
-          return { ...data.value[k], forecast: day };
+          const filteredDays = day.filter(
+            (d) =>
+              [curDate.getDate(), curDate.getDate() + 1].indexOf(
+                new Date(d.timestamp).getDate()
+              ) !== -1
+          );
+
+          return { ...data.value[k], forecast: filteredDays };
         })
       : []
   );
@@ -34,21 +41,9 @@ const useForecastData = () => {
       : []
   );
 
-  const forecastTimestamp = computed(() =>
-    data.value !== undefined
-      ? new Date(forecastDailyData.value[0].forecast[0].timestamp)
-      : Date.now()
-  );
-
-  const forecastDateStr = computed(() =>
-    format(forecastTimestamp.value, "d MMM yyyy")
-  );
-
   return {
     forecastHourlyData,
     forecastDailyData,
-    forecastTimestamp,
-    forecastDateStr,
   };
 };
 
