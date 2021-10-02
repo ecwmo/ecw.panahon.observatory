@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import * as d3 from "d3";
+import { scaleTime, scaleLinear, scaleBand, extent, timeDay } from "d3";
 
 import forecastVars from "@/data/forecastVars.json";
 
@@ -58,15 +58,14 @@ const usePlot = (data, varName, height, width, margin) => {
   const xScale = computed(() => {
     const x = plotData.value.map((d, i) => i);
     if (varName.value === "rain")
-      return d3.scaleBand().range(rangeX.value).domain(x);
-    return d3
-      .scaleTime()
+      return scaleBand().range(rangeX.value).domain(x);
+    return scaleTime()
       .range(rangeX.value)
-      .domain(d3.extent(plotData.value, (d) => d.x));
+      .domain(extent(plotData.value, (d) => d.x));
   });
 
   const yScale = computed(() =>
-    d3.scaleLinear().range(rangeY.value).domain([minYVal.value, maxYVal.value])
+    scaleLinear().range(rangeY.value).domain([minYVal.value, maxYVal.value])
   );
 
   const xAxisPath = computed(
@@ -77,7 +76,7 @@ const usePlot = (data, varName, height, width, margin) => {
     const ticks =
       varName.value === "rain"
         ? plotData.value.map((d) => d.x).filter((d) => d.getHours() === 0)
-        : xScale.value.ticks(d3.timeDay.every(1));
+        : xScale.value.ticks(timeDay.every(1));
     return ticks.map((x) => {
       let transform = `translate(${xScale.value(x)},0)`;
       if (varName.value === "rain") {
