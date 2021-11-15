@@ -37,6 +37,12 @@ const useForecastCardData = (forecastData) => {
 
   const weatherData = computed(() => {
     if (forecastData.value !== undefined) {
+      const rainChanceStr =
+        forecastData.value.rainChanceStr === "Medium"
+          ? "Med"
+          : forecastData.value.rainChanceStr === "NoChance"
+          ? "None"
+          : forecastData.value.rainChanceStr;
       return [
         {
           name: "temp",
@@ -61,7 +67,7 @@ const useForecastCardData = (forecastData) => {
         {
           name: "rain",
           title: "RAIN CHANCE",
-          data: [{ value: forecastData.value.rainChanceStr }],
+          data: [{ value: rainChanceStr }],
           icon: rainCloudIcon,
         },
       ];
