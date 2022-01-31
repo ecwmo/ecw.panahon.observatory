@@ -164,16 +164,16 @@ export default {
 
 <style lang="sass">
 .slide-x-fade-enter-active
-  transition: all 0.5s ease-out;
+  transition: all 0.5s ease-out
 
 .slide-x-fade-enter-from
-  transform: translateX(-30px);
-  opacity: 0;
+  transform: translateX(-30px)
+  opacity: 0
 
 .slide-y-fade-enter-active
-  transition: all 0.8s ease-out;
+  transition: all 0.8s ease-out
 
 .slide-y-fade-enter-from
-  transform: translateY(30px);
-  opacity: 0;
+  transform: translateY(30px)
+  opacity: 0
 </style>

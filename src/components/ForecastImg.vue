@@ -33,9 +33,9 @@ export default {
 
 <style lang="sass" scoped>
 div
-  width: 480px;
+  width: 480px
   @media (max-width: 768px)
-    width: 420px;
+    width: 420px
   @media (max-width: 640px)
-    width: 360px;
+    width: 360px
 </style>
