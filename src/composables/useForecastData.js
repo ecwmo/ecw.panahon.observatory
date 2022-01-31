@@ -1,4 +1,5 @@
 import { computed } from "vue";
+import { add as dfAdd, format as dfFormat } from "date-fns";
 import axios from "axios";
 import { useQuery } from "vue-query";
 
@@ -19,9 +20,9 @@ const useForecastData = () => {
 
           const filteredDays = day.filter(
             (d) =>
-              [curDate.getDate(), curDate.getDate() + 1].indexOf(
-                new Date(d.timestamp).getDate()
-              ) !== -1
+              [curDate, dfAdd(curDate, { days: 1 })]
+                .map((dd) => dfFormat(dd, "DDD"))
+                .indexOf(dfFormat(new Date(d.timestamp), "DDD")) !== -1
           );
 
           return { ...data.value[k], forecast: filteredDays };
