@@ -38,58 +38,62 @@
   </g>
 </template>
 
-<script>
-import { toRefs } from "vue";
+<script lang="ts">
+  import { toRefs, defineComponent, PropType } from 'vue'
 
-import usePlot from "@/composables/usePlot";
-import usePlotFormatter from "@/composables/usePlotFormatter";
+  import usePlot from '@/composables/usePlot'
+  import usePlotFormatter from '@/composables/usePlotFormatter'
 
-export default {
-  name: "XAxis",
-  props: {
-    data: {
-      required: true,
-    },
-    varName: {
-      required: true,
-    },
-    width: {
-      default: screen.width,
-      type: Number,
-    },
-    height: {
-      default: screen.width * 0.2,
-      type: Number,
-    },
-    margin: {
-      default: { top: 0, right: 0, bottom: 0, left: 0 },
-    },
-  },
-  setup(props) {
-    const { data, varName, width, height, margin } = toRefs(props);
+  import { ForecastStation } from '@/composables/useForecastData'
 
-    const { xAxisPath, yAxisTicks } = usePlot(
-      data,
-      varName,
-      height,
-      width,
-      margin
-    );
+  export default defineComponent({
+    name: 'XAxis',
+    props: {
+      data: {
+        type: Object as PropType<ForecastStation>,
+        required: true,
+      },
+      varName: {
+        type: String,
+        required: true,
+      },
+      width: {
+        default: screen.width,
+        type: Number,
+      },
+      height: {
+        default: screen.width * 0.2,
+        type: Number,
+      },
+      margin: {
+        default: { top: 0, right: 0, bottom: 0, left: 0 },
+      },
+    },
+    setup(props) {
+      const { data, varName, width, height, margin } = toRefs(props)
 
-    const { varUnit } = usePlotFormatter(varName);
+      const { xAxisPath, yAxisTicks } = usePlot(
+        data,
+        varName,
+        height,
+        width,
+        margin
+      )
 
-    return {
-      xAxisPath,
-      yAxisTicks,
-      varUnit,
-    };
-  },
-};
+      const { varUnit } = usePlotFormatter(varName)
+
+      return {
+        xAxisPath,
+        yAxisTicks,
+        varUnit,
+      }
+    },
+  })
 </script>
 
 <style lang="sass" scoped>
-text
-  font-size: 1rem
-#unit
-  font-size: 0.8rem
+  text
+    font-size: 1rem
+  #unit
+    font-size: 0.8rem
 </style>

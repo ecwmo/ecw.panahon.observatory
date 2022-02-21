@@ -8,12 +8,12 @@
         :data="w.data"
         :icon="w.icon"
         :name="w.name"
-        @click="$emit('setActiveVariable', w.name)"
         :class="[
           activeVariable === w.name
             ? 'text-white bg-gray-400'
             : 'text-gray-200 bg-gray-600 hover:bg-gray-200 hover:text-gray-600',
         ]"
+        @click="$emit('setActiveVariable', w.name)"
       />
     </div>
     <div class="flex flex-wrap justify-center gap-3 md:gap-6">
@@ -24,42 +24,46 @@
         :data="w.data"
         :icon="w.icon"
         :name="w.name"
-        @click="$emit('setActiveVariable', w.name)"
         :class="[
           activeVariable === w.name
             ? 'text-white bg-gray-400'
             : 'text-gray-200 bg-gray-600 hover:bg-gray-200 hover:text-gray-600',
         ]"
+        @click="$emit('setActiveVariable', w.name)"
       />
     </div>
   </div>
 </template>
 
-<script>
-import { toRefs } from "vue";
+<script lang="ts">
+  import { toRefs, defineComponent, PropType } from 'vue'
 
-import ForecastCard from "@/components/ForecastCard.vue";
+  import ForecastCard from '@/components/ForecastCard.vue'
 
-import useForecastCardData from "@/composables/useForecastCardData";
+  import useForecastCardData from '@/composables/useForecastCardData'
+  import { ForecastData } from '@/composables/useForecastData'
 
-export default {
-  name: "ForecastCards",
-  props: ["forecastData", "activeVariable"],
-  emits: ["setActiveVariable"],
-  components: {
-    ForecastCard,
-  },
-  setup(props) {
-    const { forecastData } = toRefs(props);
+  export default defineComponent({
+    name: 'ForecastCards',
+    components: {
+      ForecastCard,
+    },
+    props: {
+      forecastData: { type: Object as PropType<ForecastData>, required: true },
+      activeVariable: { type: String, required: true },
+    },
+    emits: ['setActiveVariable'],
+    setup(props) {
+      const { forecastData } = toRefs(props)
 
-    const { cleanEnergyData, weatherData } = useForecastCardData(forecastData);
+      const { cleanEnergyData, weatherData } = useForecastCardData(forecastData)
 
-    const variableTitle = (title, units = "") => {
-      if (units !== "") return `${title} (${units})`;
-      return title;
-    };
+      const variableTitle = (title: string, units = '') => {
+        if (units !== '') return `${title} (${units})`
+        return title
+      }
 
-    return { cleanEnergyData, weatherData, variableTitle };
-  },
-};
+      return { cleanEnergyData, weatherData, variableTitle }
+    },
+  })
 </script>

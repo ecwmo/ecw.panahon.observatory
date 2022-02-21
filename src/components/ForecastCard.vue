@@ -9,7 +9,7 @@
     </div>
     <div class="w-4/5 flex-grow flex flex-col items-center">
       <span>{{ title }}</span>
-      <div class="flex items-end gap-2" v-for="d in data" v-bind:key="d.name">
+      <div v-for="d in data" :key="d.name" class="flex items-end gap-2">
         <div class="textxs md:text-sm pb-1">{{ d.name }}</div>
         <div class="text-3xl md:text-4xl font-bold uppercase">
           {{ d.value }}
@@ -19,9 +19,18 @@
   </a>
 </template>
 
-<script>
-export default {
-  name: "ForecastCard",
-  props: ["name", "title", "data", "icon"],
-};
+<script lang="ts">
+  import { defineComponent, PropType } from 'vue'
+
+  import { ForecastCardData } from '@/composables/useForecastCardData'
+
+  export default defineComponent({
+    name: 'ForecastCard',
+    props: {
+      name: { type: String, required: true },
+      title: { type: String, required: true },
+      data: { type: Object as PropType<ForecastCardData[]>, required: true },
+      icon: { type: String, required: true },
+    },
+  })
 </script>

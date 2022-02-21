@@ -10,10 +10,12 @@
   </select>
 </template>
 
-<script>
-export default {
-  name: "SiteDropDown",
-  props: ["sites", "modelValue"],
-  emits: ["update:modelValue"],
-};
+<script lang="ts">
+  import { defineComponent } from 'vue'
+
+  export default defineComponent({
+    name: 'SiteDropDown',
+    props: ['sites', 'modelValue'],
+    emits: ['update:modelValue'],
+  })
 </script>

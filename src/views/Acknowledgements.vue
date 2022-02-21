@@ -53,31 +53,10 @@
       </template>
     </div>
     <blockquote
-      class="
-        relative
-        italic
-        font-serif
-        mx-4
-        md:mx-8
-        p-4
-        md:p-6
-        border
-        text-gray-100
-        border-gray-500
-      "
+      class="relative italic font-serif mx-4 md:mx-8 p-4 md:p-6 border text-gray-100 border-gray-500"
     >
       <span
-        class="
-          absolute
-          text-6xl
-          md:text-7xl
-          opacity-30
-          top-0
-          left-0
-          mt-1
-          ml-0.5
-          md:mt-2 md:ml-1.5
-        "
+        class="absolute text-6xl md:text-7xl opacity-30 top-0 left-0 mt-1 ml-0.5 md:mt-2 md:ml-1.5"
         aria-hidden="true"
         >&ldquo;</span
       >
@@ -91,70 +70,72 @@
   </div>
 </template>
 
-<script>
-import smLogo from "@/assets/logos/SM_Prime.png";
-import acEnergyLogo from "@/assets/logos/AC_Energy.png";
-import alphalandLogo from "@/assets/logos/alphaland.png";
-import sanMiguelLogo from "@/assets/logos/san_miguel.png";
-import mvpLogo from "@/assets/logos/mvp.png";
-import lfugGOCLogo from "@/assets/logos/LFUG_GOC.png";
-import shellLogo from "@/assets/logos/shell.png";
+<script lang="ts">
+  import { defineComponent } from 'vue'
 
-export default {
-  setup() {
-    const partners = [
-      {
-        name: "platinum",
-        title: "Platinum Partners",
-        list: [
-          {
-            name: "SM Group",
-            logo: smLogo,
-            logoClass: "h-28 p-2.5 bg-white",
-          },
-          {
-            name: "Ayala Group",
-            logo: acEnergyLogo,
-            logoClass: "h-24 bg-white",
-          },
-          {
-            name: "RVO Group",
-            logo: alphalandLogo,
-            logoClass: "h-20 p-0.5 bg-white",
-          },
-          {
-            name: "RSA Group",
-            logo: sanMiguelLogo,
-            logoClass: "h-20 p-0.5",
-          },
-          {
-            name: "MVP Group",
-            logo: mvpLogo,
-            logoClass: "h-28 p-1.5 bg-white",
-          },
-        ],
-      },
-      {
-        name: "gold",
-        title: "Gold Partners",
-        list: [
-          {
-            name: "La Filipina Uy Gongco",
-            logo: lfugGOCLogo,
-            logoClass: "h-24 bg-white p-1.5",
-          },
-          {
-            name: "Shell Philippines",
-            logo: shellLogo,
-            logoClass: "h-24 bg-white p-3",
-          },
-        ],
-      },
-    ];
+  import smLogo from '@/assets/logos/SM_Prime.png'
+  import acEnergyLogo from '@/assets/logos/AC_Energy.png'
+  import alphalandLogo from '@/assets/logos/alphaland.png'
+  import sanMiguelLogo from '@/assets/logos/san_miguel.png'
+  import mvpLogo from '@/assets/logos/mvp.png'
+  import lfugGOCLogo from '@/assets/logos/LFUG_GOC.png'
+  import shellLogo from '@/assets/logos/shell.png'
 
-    return {
-      partners,
-    };
-  },
-};
+  export default defineComponent({
+    setup() {
+      const partners = [
+        {
+          name: 'platinum',
+          title: 'Platinum Partners',
+          list: [
+            {
+              name: 'SM Group',
+              logo: smLogo,
+              logoClass: 'h-28 p-2.5 bg-white',
+            },
+            {
+              name: 'Ayala Group',
+              logo: acEnergyLogo,
+              logoClass: 'h-24 bg-white',
+            },
+            {
+              name: 'RVO Group',
+              logo: alphalandLogo,
+              logoClass: 'h-20 p-0.5 bg-white',
+            },
+            {
+              name: 'RSA Group',
+              logo: sanMiguelLogo,
+              logoClass: 'h-20 p-0.5',
+            },
+            {
+              name: 'MVP Group',
+              logo: mvpLogo,
+              logoClass: 'h-28 p-1.5 bg-white',
+            },
+          ],
+        },
+        {
+          name: 'gold',
+          title: 'Gold Partners',
+          list: [
+            {
+              name: 'La Filipina Uy Gongco',
+              logo: lfugGOCLogo,
+              logoClass: 'h-24 bg-white p-1.5',
+            },
+            {
+              name: 'Shell Philippines',
+              logo: shellLogo,
+              logoClass: 'h-24 bg-white p-3',
+            },
+          ],
+        },
+      ]
+
+      return {
+        partners,
+      }
+    },
+  })
 </script>

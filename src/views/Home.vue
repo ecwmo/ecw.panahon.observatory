@@ -6,23 +6,23 @@
       enter-from-class="slide-x-fade-enter-from"
     >
       <div
-        class="relative flex h-full mt-8 ml-8 md:ml-0 md:mt-0"
         v-show="!extendedMode"
+        class="relative flex h-full mt-8 ml-8 md:ml-0 md:mt-0"
       >
         <!-- sidebar -->
         <ForecastSidebar
           class="absolute z-10 mt-4 md:mt-8"
-          :forecastVars="forecastVars"
-          :activeVariable="activeVariable"
-          :activeImgType="activeImgType"
+          :forecast-vars="forecastVars"
+          :active-variable="activeVariable"
+          :active-img-type="activeImgType"
           @set-active-variable="activeVariable = $event"
           @set-active-img-type="activeImgType = $event"
         />
         <!-- map -->
         <ForecastImg
-          :varName="activeVariable"
+          :var-name="activeVariable"
           :day="activeDay"
-          :imgType="activeImgType"
+          :img-type="activeImgType"
           class="relative ml-10 md:-mt-8"
         />
       </div>
@@ -30,9 +30,9 @@
     <div class="flex flex-grow flex-col items-start">
       <span class="text-sm font-extralight">{{ forecastDateStr }}</span>
       <span class="text-3xl mb-3">Clean Power • Weather Outlook</span>
-      <SiteDropDown :sites="forecastSites" v-model="activeSite" />
+      <SiteDropDown v-model="activeSite" :sites="forecastSites" />
       <ForecastNavTab
-        :activeDay="activeDay"
+        :active-day="activeDay"
         @set-active-day="activeDay = $event"
       />
       <transition
@@ -42,34 +42,23 @@
       >
         <!-- info cards -->
         <ForecastCards
-          :forecastData="activeSiteDayData"
-          :activeVariable="activeVariable"
-          @set-active-variable="activeVariable = $event"
           v-if="!extendedMode"
+          :forecast-data="activeSiteDayData"
+          :active-variable="activeVariable"
+          @set-active-variable="activeVariable = $event"
         />
         <!-- graph -->
         <ForecastPlot
+          v-else
           class="w-full flex justify-center pt-8"
           :data="activeSiteHourlyData"
-          v-else
         />
       </transition>
     </div>
   </div>
   <!-- disclaimer -->
   <div
-    class="
-      flex
-      w-full
-      pt-8
-      italic
-      text-xs
-      font-medium
-      text-justify
-      self-center
-      break-words
-      md:break-normal
-    "
+    class="flex w-full pt-8 italic text-xs font-medium text-justify self-center break-words md:break-normal"
   >
     <span class="font-bold">DISCLAIMER</span>: These are experimental forecasts
     for research purposes. For official updates and warnings, please refer to
@@ -77,103 +66,107 @@
   </div>
 </template>
 
-<script>
-import { ref, computed, defineAsyncComponent } from "vue";
-import { format, addDays } from "date-fns";
+<script lang="ts">
+  import { ref, computed, defineComponent, defineAsyncComponent } from 'vue'
+  import { format, addDays } from 'date-fns'
 
-import ForecastSidebar from "@/components/ForecastSidebar.vue";
-import ForecastImg from "@/components/ForecastImg.vue";
-import SiteDropDown from "@/components/SiteDropDown.vue";
-import ForecastNavTab from "@/components/ForecastNavTab.vue";
-import ForecastCards from "@/components/ForecastCards.vue";
+  import ForecastSidebar from '@/components/ForecastSidebar.vue'
+  import ForecastImg from '@/components/ForecastImg.vue'
+  import SiteDropDown from '@/components/SiteDropDown.vue'
+  import ForecastNavTab from '@/components/ForecastNavTab.vue'
+  import ForecastCards from '@/components/ForecastCards.vue'
 
-import _forecastVars from "@/data/forecastVars.json";
+  import _forecastVars from '@/data/forecastVars.json'
 
-import useForecastData from "@/composables/useForecastData";
+  import useForecastData, {
+    ForecastStation,
+    ForecastData,
+  } from '@/composables/useForecastData'
 
-export default {
-  name: "App",
-  components: {
-    ForecastSidebar,
-    ForecastImg,
-    SiteDropDown,
-    ForecastNavTab,
-    ForecastCards,
-    ForecastPlot: defineAsyncComponent(() =>
-      import("@/components/ForecastPlot.vue")
-    ),
-  },
-  setup() {
-    const currentDate = Date.now();
-    const activeSite = ref("NCR");
-    const activeDay = ref(0);
-    const activeVariable = ref("wpd");
-    const activeImgType = ref(0);
+  export default defineComponent({
+    name: 'App',
+    components: {
+      ForecastSidebar,
+      ForecastImg,
+      SiteDropDown,
+      ForecastNavTab,
+      ForecastCards,
+      ForecastPlot: defineAsyncComponent(
+        () => import('@/components/ForecastPlot.vue')
+      ),
+    },
+    setup() {
+      const currentDate = Date.now()
+      const activeSite = ref('NCR')
+      const activeDay = ref(0)
+      const activeVariable = ref('wpd')
+      const activeImgType = ref(0)
 
-    const { forecastDailyData, forecastHourlyData } = useForecastData();
+      const { forecastDailyData, forecastHourlyData } = useForecastData()
 
-    const activeSiteDayData = computed(() => {
-      const data = forecastDailyData.value.find(
-        (d) => d.name === activeSite.value
-      );
-      if (data !== undefined) return data.forecast[activeDay.value];
-      return data;
-    });
-
-    const activeSiteHourlyData = computed(() =>
-      forecastHourlyData.value.find((d) => d.name === activeSite.value)
-    );
-
-    const forecastVars = computed(() =>
-      _forecastVars.map((d) => {
-        if (d.name === "rain") d.title = "RAIN CHANCE";
-        return d;
+      const activeSiteDayData = computed((): ForecastData => {
+        const { forecast } = forecastDailyData.value.find(
+          (d) => d.name === activeSite.value
+        ) || { forecast: [] }
+        return forecast[activeDay.value]
       })
-    );
 
-    const forecastSites = computed(() =>
-      forecastDailyData.value.map(({ name }) => ({
-        name,
-      }))
-    );
-
-    const extendedMode = computed(() => activeDay.value > 1);
-
-    const forecastDateStr = computed(() =>
-      format(
-        activeDay.value === 1 ? addDays(currentDate, 1) : currentDate,
-        "d MMM yyyy"
+      const activeSiteHourlyData = computed(
+        (): ForecastStation =>
+          forecastHourlyData.value.find((d) => d.name === activeSite.value) ||
+          <ForecastStation>{}
       )
-    );
 
-    return {
-      activeSite,
-      activeDay,
-      activeVariable,
-      activeImgType,
-      activeSiteDayData,
-      activeSiteHourlyData,
-      forecastVars,
-      forecastSites,
-      forecastDateStr,
-      extendedMode,
-    };
-  },
-};
+      const forecastVars = computed(() =>
+        _forecastVars.map((d) => {
+          if (d.name === 'rain') d.title = 'RAIN CHANCE'
+          return d
+        })
+      )
+
+      const forecastSites = computed(() =>
+        forecastDailyData.value.map(({ name }) => ({
+          name,
+        }))
+      )
+
+      const extendedMode = computed(() => activeDay.value > 1)
+
+      const forecastDateStr = computed(() =>
+        format(
+          activeDay.value === 1 ? addDays(currentDate, 1) : currentDate,
+          'd MMM yyyy'
+        )
+      )
+
+      return {
+        activeSite,
+        activeDay,
+        activeVariable,
+        activeImgType,
+        activeSiteDayData,
+        activeSiteHourlyData,
+        forecastVars,
+        forecastSites,
+        forecastDateStr,
+        extendedMode,
+      }
+    },
+  })
 </script>
 
 <style lang="sass">
-.slide-x-fade-enter-active
-  transition: all 0.5s ease-out
+  .slide-x-fade-enter-active
+    transition: all 0.5s ease-out
 
-.slide-x-fade-enter-from
-  transform: translateX(-30px)
-  opacity: 0
+  .slide-x-fade-enter-from
+    transform: translateX(-30px)
+    opacity: 0
 
-.slide-y-fade-enter-active
-  transition: all 0.8s ease-out
+  .slide-y-fade-enter-active
+    transition: all 0.8s ease-out
 
-.slide-y-fade-enter-from
-  transform: translateY(30px)
-  opacity: 0
+  .slide-y-fade-enter-from
+    transform: translateY(30px)
+    opacity: 0
 </style>
