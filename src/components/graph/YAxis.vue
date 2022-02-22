@@ -14,12 +14,12 @@
         stroke-width="0.05em"
       ></path>
       <text
-        id="unit"
         v-if="i === yAxisTicks.length - 1"
+        id="unit"
         :x="margin.left"
         y="-6"
         text-anchor="start"
-        alignment-baseline="top"
+        alignment-baseline="baseline"
         fill="currentColor"
         stroke="none"
       >
