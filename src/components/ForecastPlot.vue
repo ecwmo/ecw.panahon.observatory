@@ -199,7 +199,7 @@
       const handleMouseMove = (ev: MouseEvent) => {
         let i
         let transform = ''
-        let pt
+        let pt = { x: new Date(), y: 0 }
         const tooltip = d3.select('#tooltip')
 
         if (activeVariable.value !== 'rain') {
