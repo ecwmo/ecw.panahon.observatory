@@ -1,8 +1,13 @@
 <template>
   <div class="flex flex-col">
-    <img alt="Map" :src="forecastImg" />
+    <img alt="Map" :src="forecastImg" data-test="map" />
     <div class="h-12">
-      <img alt="Colobar" :src="forecastImgCmap" class="transform scale-50" />
+      <img
+        alt="Colobar"
+        :src="forecastImgCmap"
+        class="transform scale-50"
+        data-test="colorbar"
+      />
     </div>
   </div>
 </template>
@@ -15,8 +20,8 @@
     name: 'ForecastImg',
     props: {
       varName: { type: String, required: true },
-      day: { type: Number, required: true },
-      imgType: { type: Number, required: true },
+      day: { type: Number, default: 0 },
+      imgType: { type: Number, default: 0 },
     },
     setup(props) {
       const { varName, day, imgType } = toRefs(props)
