@@ -12,11 +12,9 @@
         <!-- sidebar -->
         <ForecastSidebar
           class="absolute z-10 mt-4 md:mt-8"
-          :forecast-vars="forecastVars"
-          :active-variable="activeVariable"
-          :active-img-type="activeImgType"
-          @set-active-variable="activeVariable = $event"
-          @set-active-img-type="activeImgType = $event"
+          :data="forecastVars"
+          v-model:activeVariable="activeVariable"
+          v-model:activeType="activeImgType"
         />
         <!-- map -->
         <ForecastImg
@@ -41,12 +39,7 @@
         enter-from-class="slide-y-fade-enter-from"
       >
         <!-- info cards -->
-        <ForecastCards
-          v-if="!extendedMode"
-          :forecast-data="activeSiteDayData"
-          :active-variable="activeVariable"
-          @set-active-variable="activeVariable = $event"
-        />
+        <ForecastCards v-if="!extendedMode" :data="activeSiteDayData" />
         <!-- graph -->
         <ForecastPlot
           v-else
@@ -120,7 +113,12 @@
       const forecastVars = computed(() =>
         _forecastVars.map((d) => {
           if (d.name === 'rain') d.title = 'RAIN CHANCE'
-          return d
+          let imgVariants: string[]
+          if (['wpd', 'ppv'].indexOf(d.name) !== -1)
+            imgVariants = ['Ave', 'Max']
+          else if (d.name === 'rain') imgVariants = []
+          else imgVariants = ['Min', 'Max']
+          return { ...d, imgVariants }
         })
       )
 

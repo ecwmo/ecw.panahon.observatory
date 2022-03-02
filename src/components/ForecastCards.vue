@@ -8,12 +8,7 @@
         :data="w.data"
         :icon="w.icon"
         :name="w.name"
-        :class="[
-          activeVariable === w.name
-            ? 'text-white bg-gray-400'
-            : 'text-gray-200 bg-gray-600 hover:bg-gray-200 hover:text-gray-600',
-        ]"
-        @click="$emit('setActiveVariable', w.name)"
+        class="text-gray-200 bg-gray-600 hover:bg-gray-500 hover:text-gray-300"
       />
     </div>
     <div class="flex flex-wrap justify-center gap-3 md:gap-6">
@@ -24,12 +19,7 @@
         :data="w.data"
         :icon="w.icon"
         :name="w.name"
-        :class="[
-          activeVariable === w.name
-            ? 'text-white bg-gray-400'
-            : 'text-gray-200 bg-gray-600 hover:bg-gray-200 hover:text-gray-600',
-        ]"
-        @click="$emit('setActiveVariable', w.name)"
+        class="text-gray-200 bg-gray-600 hover:bg-gray-500 hover:text-gray-300"
       />
     </div>
   </div>
@@ -49,14 +39,12 @@
       ForecastCard,
     },
     props: {
-      forecastData: { type: Object as PropType<ForecastData>, required: true },
-      activeVariable: { type: String, required: true },
+      data: { type: Object as PropType<ForecastData>, required: true },
     },
-    emits: ['setActiveVariable'],
     setup(props) {
-      const { forecastData } = toRefs(props)
+      const { data } = toRefs(props)
 
-      const { cleanEnergyData, weatherData } = useForecastCardData(forecastData)
+      const { cleanEnergyData, weatherData } = useForecastCardData(data)
 
       const variableTitle = (title: string, units = '') => {
         if (units !== '') return `${title} (${units})`
