@@ -1,5 +1,6 @@
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import axios from 'axios'
+import { useQuery } from 'vue-query'
 
 interface ForecastImgs {
   imgs: string[]
@@ -8,7 +9,11 @@ interface ForecastImgs {
 
 const useForecastImg = (variable = ref(''), day = ref(0), imgType = ref(0)) => {
   const baseUrl = 'https://panahon.observatory.ph'
-  const forecastImgs = ref(<ForecastImgs>{})
+
+  const fetcher = (): Promise<ForecastImgs> =>
+    axios.get(`${baseUrl}/api/forecast-img.php`).then(({ data }) => data)
+
+  const { data } = useQuery('forecastImgs', fetcher)
 
   const varName = computed(() =>
     variable.value !== 'rain' ? variable.value : 'rainchance'
@@ -22,7 +27,7 @@ const useForecastImg = (variable = ref(''), day = ref(0), imgType = ref(0)) => {
 
     const hh = day.value < 2 ? (day.value + 1) * 24 : 24
 
-    const img = forecastImgs.value?.imgs?.find((i) =>
+    const img = data.value?.imgs?.find((i) =>
       i.includes(
         variable.value !== 'rain'
           ? `${hh}hr_${varName.value}_${imgTypes[imgType.value]}`
@@ -33,16 +38,8 @@ const useForecastImg = (variable = ref(''), day = ref(0), imgType = ref(0)) => {
   })
 
   const forecastImgCmap = computed(() => {
-    const img = forecastImgs.value?.cmaps?.find((i) =>
-      i.includes(varName.value)
-    )
+    const img = data.value?.cmaps?.find((i) => i.includes(varName.value))
     return `${baseUrl}/${img}`
-  })
-
-  onMounted(async () => {
-    forecastImgs.value = await axios
-      .get(`${baseUrl}/api/forecast-img.php`)
-      .then(({ data }) => <ForecastImgs>data)
   })
 
   return {
