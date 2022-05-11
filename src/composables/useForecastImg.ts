@@ -11,7 +11,7 @@ const useForecastImg = (variable = ref(''), day = ref(0), imgType = ref(0)) => {
   const baseUrl = 'https://panahon.observatory.ph'
 
   const fetcher = (): Promise<ForecastImgs> =>
-    axios.get(`${baseUrl}/api/forecast-img.php`).then(({ data }) => data)
+    axios.get(`${baseUrl}/api/forecast.php?img=2`).then(({ data }) => data)
 
   const { data } = useQuery('forecastImgs', fetcher)
 
