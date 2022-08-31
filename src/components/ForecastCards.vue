@@ -25,33 +25,23 @@
   </div>
 </template>
 
-<script lang="ts">
-  import { toRefs, defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+  import { PropType } from 'vue'
 
   import ForecastCard from '@/components/ForecastCard.vue'
 
-  import useForecastCardData from '@/composables/useForecastCardData'
   import { ForecastData } from '@/composables/useForecastData'
 
-  export default defineComponent({
-    name: 'ForecastCards',
-    components: {
-      ForecastCard,
-    },
-    props: {
-      data: { type: Object as PropType<ForecastData>, required: true },
-    },
-    setup(props) {
-      const { data } = toRefs(props)
-
-      const { cleanEnergyData, weatherData } = useForecastCardData(data)
-
-      const variableTitle = (title: string, units = '') => {
-        if (units !== '') return `${title} (${units})`
-        return title
-      }
-
-      return { cleanEnergyData, weatherData, variableTitle }
-    },
+  const props = defineProps({
+    data: { type: Object as PropType<ForecastData>, required: true },
   })
+
+  const { data } = toRefs(props)
+
+  const { cleanEnergyData, weatherData } = useForecastCardData(data)
+
+  const variableTitle = (title: string, units = '') => {
+    if (units !== '') return `${title} (${units})`
+    return title
+  }
 </script>

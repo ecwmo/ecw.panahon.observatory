@@ -16,21 +16,13 @@
   </nav>
 </template>
 
-<script lang="ts">
-  import { defineComponent } from 'vue'
+<script lang="ts" setup>
+  defineProps({ activeDay: { type: Number, required: true } })
+  defineEmits(['setActiveDay'])
 
-  export default defineComponent({
-    name: 'ForecastNavTab',
-    props: { activeDay: { type: Number, required: true } },
-    emits: ['setActiveDay'],
-    setup() {
-      const tabs = [
-        { label: 'Today', value: 0 },
-        { label: 'Tomorrow', value: 1 },
-        { label: 'Extended', value: 4 },
-      ]
-
-      return { tabs }
-    },
-  })
+  const tabs = [
+    { label: 'Today', value: 0 },
+    { label: 'Tomorrow', value: 1 },
+    { label: 'Extended', value: 4 },
+  ]
 </script>

@@ -25,18 +25,15 @@
   </a>
 </template>
 
-<script lang="ts">
-  import { defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+  import { PropType } from 'vue'
 
   import { ForecastCardData } from '@/composables/useForecastCardData'
 
-  export default defineComponent({
-    name: 'ForecastCard',
-    props: {
-      name: { type: String, required: true },
-      title: { type: String, required: true },
-      data: { type: Object as PropType<ForecastCardData[]>, required: true },
-      icon: { type: String, required: true },
-    },
+  defineProps({
+    name: { type: String, required: true },
+    title: { type: String, required: true },
+    data: { type: Object as PropType<ForecastCardData[]>, required: true },
+    icon: { type: String, required: true },
   })
 </script>

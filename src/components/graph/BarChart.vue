@@ -36,72 +36,59 @@
   </g>
 </template>
 
-<script lang="ts">
-  import { toRefs, defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+  import { PropType } from 'vue'
   import { select } from 'd3'
-
-  import usePlot from '@/composables/usePlot'
 
   import { ForecastStation } from '@/composables/useForecastData'
 
-  export default defineComponent({
-    name: 'BarChart',
-    props: {
-      data: {
-        type: Object as PropType<ForecastStation>,
-        required: true,
-      },
-      varName: {
-        type: String,
-        required: true,
-      },
-      width: {
-        default: screen.width,
-        type: Number,
-      },
-      height: {
-        default: screen.width * 0.2,
-        type: Number,
-      },
-      margin: {
-        default: { top: 0, right: 0, bottom: 0, left: 0 },
-      },
-      fill: {
-        default: 'blue',
-      },
-      stroke: {
-        default: 'blue',
-      },
+  const props = defineProps({
+    data: {
+      type: Object as PropType<ForecastStation>,
+      required: true,
     },
-    emits: ['setHoveredBar'],
-    setup(props) {
-      const { data, varName, width, height, margin } = toRefs(props)
-
-      const { plotData, xScale, yScale } = usePlot(
-        data,
-        varName,
-        height,
-        width,
-        margin
-      )
-
-      const handleMouseEnter = (ev: MouseEvent) => {
-        const bar = select(<HTMLElement>ev.target)
-        bar.attr('stroke-width', '5px').attr('fill-opacity', '0.1')
-      }
-
-      const handleMouseLeave = (ev: MouseEvent) => {
-        const bar = select(<HTMLElement>ev.target)
-        bar.attr('stroke-width', '2px').attr('fill-opacity', '0.25')
-      }
-
-      return {
-        plotData,
-        xScale,
-        yScale,
-        handleMouseEnter,
-        handleMouseLeave,
-      }
+    varName: {
+      type: String,
+      required: true,
+    },
+    width: {
+      default: screen.width,
+      type: Number,
+    },
+    height: {
+      default: screen.width * 0.2,
+      type: Number,
+    },
+    margin: {
+      default: { top: 0, right: 0, bottom: 0, left: 0 },
+    },
+    fill: {
+      default: 'blue',
+    },
+    stroke: {
+      default: 'blue',
     },
   })
+
+  defineEmits(['setHoveredBar'])
+
+  const { data, varName, width, height, margin } = toRefs(props)
+
+  const { plotData, xScale, yScale } = usePlot(
+    data,
+    varName,
+    height,
+    width,
+    margin
+  )
+
+  const handleMouseEnter = (ev: MouseEvent) => {
+    const bar = select(ev.target as HTMLElement)
+    bar.attr('stroke-width', '5px').attr('fill-opacity', '0.1')
+  }
+
+  const handleMouseLeave = (ev: MouseEvent) => {
+    const bar = select(ev.target as HTMLElement)
+    bar.attr('stroke-width', '2px').attr('fill-opacity', '0.25')
+  }
 </script>

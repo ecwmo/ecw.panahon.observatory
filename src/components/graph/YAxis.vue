@@ -38,57 +38,44 @@
   </g>
 </template>
 
-<script lang="ts">
-  import { toRefs, defineComponent, PropType } from 'vue'
-
-  import usePlot from '@/composables/usePlot'
-  import usePlotFormatter from '@/composables/usePlotFormatter'
+<script lang="ts" setup>
+  import { PropType } from 'vue'
 
   import { ForecastStation } from '@/composables/useForecastData'
 
-  export default defineComponent({
-    name: 'XAxis',
-    props: {
-      data: {
-        type: Object as PropType<ForecastStation>,
-        required: true,
-      },
-      varName: {
-        type: String,
-        required: true,
-      },
-      width: {
-        default: screen.width,
-        type: Number,
-      },
-      height: {
-        default: screen.width * 0.2,
-        type: Number,
-      },
-      margin: {
-        default: { top: 0, right: 0, bottom: 0, left: 0 },
-      },
+  const props = defineProps({
+    data: {
+      type: Object as PropType<ForecastStation>,
+      required: true,
     },
-    setup(props) {
-      const { data, varName, width, height, margin } = toRefs(props)
-
-      const { xAxisPath, yAxisTicks } = usePlot(
-        data,
-        varName,
-        height,
-        width,
-        margin
-      )
-
-      const { varUnit } = usePlotFormatter(varName)
-
-      return {
-        xAxisPath,
-        yAxisTicks,
-        varUnit,
-      }
+    varName: {
+      type: String,
+      required: true,
+    },
+    width: {
+      default: screen.width,
+      type: Number,
+    },
+    height: {
+      default: screen.width * 0.2,
+      type: Number,
+    },
+    margin: {
+      default: { top: 0, right: 0, bottom: 0, left: 0 },
     },
   })
+
+  const { data, varName, width, height, margin } = toRefs(props)
+
+  const { xAxisPath, yAxisTicks } = usePlot(
+    data,
+    varName,
+    height,
+    width,
+    margin
+  )
+
+  const { varUnit } = usePlotFormatter(varName)
 </script>
 
 <style lang="sass" scoped>

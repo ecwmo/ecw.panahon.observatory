@@ -12,32 +12,16 @@
   </div>
 </template>
 
-<script lang="ts">
-  import { toRefs, defineComponent } from 'vue'
-  import useForecastImg from '@/composables/useForecastImg'
-
-  export default defineComponent({
-    name: 'ForecastImg',
-    props: {
-      varName: { type: String, required: true },
-      day: { type: Number, default: 0 },
-      imgType: { type: Number, default: 0 },
-    },
-    setup(props) {
-      const { varName, day, imgType } = toRefs(props)
-
-      const { forecastImg, forecastImgCmap } = useForecastImg(
-        varName,
-        day,
-        imgType
-      )
-
-      return {
-        forecastImg,
-        forecastImgCmap,
-      }
-    },
+<script lang="ts" setup>
+  const props = defineProps({
+    varName: { type: String, required: true },
+    day: { type: Number, default: 0 },
+    imgType: { type: Number, default: 0 },
   })
+
+  const { varName, day, imgType } = toRefs(props)
+
+  const { forecastImg, forecastImgCmap } = useForecastImg(varName, day, imgType)
 </script>
 
 <style lang="sass" scoped>

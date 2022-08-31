@@ -103,8 +103,8 @@
   </div>
 </template>
 
-<script lang="ts">
-  import { ref, computed, toRefs, defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+  import { PropType } from 'vue'
   import * as d3 from 'd3'
 
   import forecastVars from '@/data/forecastVars.json'
@@ -120,144 +120,112 @@
 
   import { ForecastStation } from '@/composables/useForecastData'
 
-  export default defineComponent({
-    name: 'ForecastPlot',
-    components: {
-      XAxis,
-      YAxis,
-      LinePlot,
-      BarChart,
-      DotLabels,
-    },
-    props: {
-      data: {
-        type: Object as PropType<ForecastStation>,
-        required: true,
-      },
-    },
-    setup(props) {
-      const activeVariable = ref('wpd')
-      const hoveredBar = ref()
-
-      const margin = ref({ top: 40, right: 30, bottom: 30, left: 40 })
-
-      const { data } = toRefs(props)
-      const isHovered = ref(false)
-
-      const width = computed(() => screen.width)
-
-      const height = computed(() => {
-        if (screen.width < 640) return screen.width * 0.6
-        else if (screen.width < 768) return screen.width * 0.3
-        return screen.width * 0.2
-      })
-
-      const {
-        plotData,
-        rangeY,
-        xTScale: xScale,
-        yScale,
-        valueIsValid,
-      } = usePlot(data, activeVariable, height, width, margin)
-
-      const { valueText, dateText } = usePlotFormatter(activeVariable)
-
-      const viewBox = computed(() => `0 0 ${width.value} ${height.value}`)
-
-      const stroke = computed(() => {
-        const { stroke } = forecastVars.find(
-          (f) => f.name === activeVariable.value
-        ) || { stroke: 'black' }
-
-        return stroke
-      })
-
-      const fill = computed(() => {
-        const { fill } = forecastVars.find(
-          (f) => f.name === activeVariable.value
-        ) || { fill: 'black' }
-
-        return fill
-      })
-
-      const dotColor = computed(() => {
-        const { dotColor } = forecastVars.find(
-          (f) => f.name === activeVariable.value
-        ) || { dotColor: 'black' }
-
-        return dotColor
-      })
-
-      const valueTextColor = computed(() => {
-        const { dotColor } = forecastVars.find(
-          (f) => f.name === activeVariable.value
-        ) || { dotColor: 'black' }
-
-        return dotColor
-      })
-
-      const handleMouseMove = (ev: MouseEvent) => {
-        let i
-        let transform = ''
-        let pt = { x: new Date(), y: 0 }
-        const tooltip = d3.select('#tooltip')
-
-        if (activeVariable.value !== 'rain') {
-          const pointer = d3.pointer(ev)
-          const xm = xScale.value.invert(pointer[0])
-          const dates = plotData.value.map((d) => d.x)
-
-          i = d3.bisectCenter(dates, xm)
-          pt = plotData.value[i]
-          transform = `translate(${xScale.value(pt.x)},${yScale.value(pt.y)})`
-        } else {
-          if (hoveredBar.value !== undefined) {
-            const bar = d3.select(hoveredBar.value.target)
-            const x = bar.select('rect').attr('x')
-            i = hoveredBar.value.target.dataset['index']
-            pt = plotData.value[i]
-
-            transform = `translate(${x},${rangeY.value[1]})`
-          }
-        }
-
-        if (valueIsValid(pt)) {
-          tooltip.attr('transform', transform)
-          tooltip.select('text').text(valueText(pt.y, true))
-          tooltip
-            .select('text:last-of-type')
-            .text(dateText(pt.x, 'MMM d, haaa'))
-        }
-      }
-
-      const handleMouseEnter = () => {
-        isHovered.value = true
-      }
-
-      const handleMouseLeave = () => {
-        isHovered.value = false
-      }
-
-      return {
-        width,
-        height,
-        margin,
-        viewBox,
-        stroke,
-        fill,
-        forecastVars,
-        plotData,
-        activeVariable,
-        dotColor,
-        valueTextColor,
-        isHovered,
-        hoveredBar,
-        handleMouseMove,
-        handleMouseEnter,
-        handleMouseLeave,
-      }
+  const props = defineProps({
+    data: {
+      type: Object as PropType<ForecastStation>,
+      required: true,
     },
   })
+
+  const activeVariable = ref('wpd')
+  const hoveredBar = ref()
+
+  const margin = ref({ top: 40, right: 30, bottom: 30, left: 40 })
+
+  const { data } = toRefs(props)
+  const isHovered = ref(false)
+
+  const width = computed(() => screen.width)
+
+  const height = computed(() => {
+    if (screen.width < 640) return screen.width * 0.6
+    else if (screen.width < 768) return screen.width * 0.3
+    return screen.width * 0.2
+  })
+
+  const {
+    plotData,
+    rangeY,
+    xTScale: xScale,
+    yScale,
+    valueIsValid,
+  } = usePlot(data, activeVariable, height, width, margin)
+
+  const { valueText, dateText } = usePlotFormatter(activeVariable)
+
+  const viewBox = computed(() => `0 0 ${width.value} ${height.value}`)
+
+  const stroke = computed(() => {
+    const { stroke } = forecastVars.find(
+      (f) => f.name === activeVariable.value
+    ) || { stroke: 'black' }
+
+    return stroke
+  })
+
+  const fill = computed(() => {
+    const { fill } = forecastVars.find(
+      (f) => f.name === activeVariable.value
+    ) || { fill: 'black' }
+
+    return fill
+  })
+
+  const dotColor = computed(() => {
+    const { dotColor } = forecastVars.find(
+      (f) => f.name === activeVariable.value
+    ) || { dotColor: 'black' }
+
+    return dotColor
+  })
+
+  const valueTextColor = computed(() => {
+    const { dotColor } = forecastVars.find(
+      (f) => f.name === activeVariable.value
+    ) || { dotColor: 'black' }
+
+    return dotColor
+  })
+
+  const handleMouseMove = (ev: MouseEvent) => {
+    let i
+    let transform = ''
+    let pt = { x: new Date(), y: 0 }
+    const tooltip = d3.select('#tooltip')
+
+    if (activeVariable.value !== 'rain') {
+      const pointer = d3.pointer(ev)
+      const xm = xScale.value.invert(pointer[0])
+      const dates = plotData.value.map((d) => d.x)
+
+      i = d3.bisectCenter(dates, xm)
+      pt = plotData.value[i]
+      transform = `translate(${xScale.value(pt.x)},${yScale.value(pt.y)})`
+    } else {
+      if (hoveredBar.value !== undefined) {
+        const bar = d3.select(hoveredBar.value.target)
+        const x = bar.select('rect').attr('x')
+        i = hoveredBar.value.target.dataset['index']
+        pt = plotData.value[i]
+
+        transform = `translate(${x},${rangeY.value[1]})`
+      }
+    }
+
+    if (valueIsValid(pt)) {
+      tooltip.attr('transform', transform)
+      tooltip.select('text').text(valueText(pt.y, true))
+      tooltip.select('text:last-of-type').text(dateText(pt.x, 'MMM d, haaa'))
+    }
+  }
+
+  const handleMouseEnter = () => {
+    isHovered.value = true
+  }
+
+  const handleMouseLeave = () => {
+    isHovered.value = false
+  }
 </script>
 
 <style lang="sass" scoped>

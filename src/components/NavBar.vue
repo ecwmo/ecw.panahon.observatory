@@ -55,29 +55,19 @@
   </header>
 </template>
 
-<script lang="ts">
-  import { defineComponent, ref } from 'vue'
+<script lang="ts" setup>
+  const open = ref(false)
 
-  export default defineComponent({
-    name: 'NavBar',
-    setup() {
-      const open = ref(false)
-      const activeTab = ref(0)
+  const tabs = [
+    { label: 'Power • Weather', to: '/' },
+    { label: 'Acknowledgements', to: '/acknowledgements' },
+  ]
 
-      const tabs = [
-        { label: 'Power • Weather', to: '/' },
-        { label: 'Acknowledgements', to: '/acknowledgements' },
-      ]
+  const tabs2 = [
+    { label: 'Station Data', href: 'https://panahon.observatory.ph' },
+  ]
 
-      const tabs2 = [
-        { label: 'Station Data', href: 'https://panahon.observatory.ph' },
-      ]
-
-      const toggle = () => (open.value = !open.value)
-
-      return { tabs, tabs2, activeTab, open, toggle }
-    },
-  })
+  const toggle = () => (open.value = !open.value)
 </script>
 
 <style lang="sass" scoped>

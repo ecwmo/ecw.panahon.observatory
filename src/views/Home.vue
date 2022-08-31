@@ -71,10 +71,7 @@
 
   import _forecastVars from '@/data/forecastVars.json'
 
-  import useForecastData, {
-    ForecastStation,
-    ForecastData,
-  } from '@/composables/useForecastData'
+  import { ForecastStation, ForecastData } from '@/composables/useForecastData'
 
   export default defineComponent({
     name: 'App',

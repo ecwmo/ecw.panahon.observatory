@@ -11,19 +11,17 @@
   </select>
 </template>
 
-<script lang="ts">
-  import { defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+  import { PropType } from 'vue'
 
   interface Site {
     name: string
   }
 
-  export default defineComponent({
-    name: 'SiteDropDown',
-    props: {
-      sites: { type: Object as PropType<Site[]>, default: [{ name: '' }] },
-      modelValue: { type: String, default: '' },
-    },
-    emits: ['update:modelValue'],
+  defineProps({
+    sites: { type: Object as PropType<Site[]>, default: [{ name: '' }] },
+    modelValue: { type: String, default: '' },
   })
+
+  defineEmits(['update:modelValue'])
 </script>

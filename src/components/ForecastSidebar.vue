@@ -36,8 +36,8 @@
   </div>
 </template>
 
-<script lang="ts">
-  import { defineComponent, toRefs, PropType, computed } from 'vue'
+<script lang="ts" setup>
+  import { PropType } from 'vue'
 
   interface Variable {
     name: string
@@ -45,35 +45,28 @@
     imgVariants: string[]
   }
 
-  export default defineComponent({
-    name: 'ForecastSidebar',
-    props: {
-      data: {
-        type: Object as PropType<Variable[]>,
-        required: true,
-      },
-      activeVariable: {
-        type: String,
-        default: '',
-      },
-      activeType: {
-        type: Number,
-        default: 0,
-      },
+  const props = defineProps({
+    data: {
+      type: Object as PropType<Variable[]>,
+      required: true,
     },
-    emits: ['update:activeVariable', 'update:activeType'],
-    setup(props) {
-      const { data, activeVariable } = toRefs(props)
-
-      const imgVariants = computed(() => {
-        const d = data.value.find(({ name }) => name === activeVariable.value)
-
-        return d !== undefined ? d.imgVariants : []
-      })
-
-      return {
-        imgVariants,
-      }
+    activeVariable: {
+      type: String,
+      default: '',
     },
+    activeType: {
+      type: Number,
+      default: 0,
+    },
+  })
+
+  defineEmits(['update:activeVariable', 'update:activeType'])
+
+  const { data, activeVariable } = toRefs(props)
+
+  const imgVariants = computed(() => {
+    const d = data.value.find(({ name }) => name === activeVariable.value)
+
+    return d !== undefined ? d.imgVariants : []
   })
 </script>
