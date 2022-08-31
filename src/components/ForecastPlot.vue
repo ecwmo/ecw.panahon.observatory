@@ -25,7 +25,7 @@
       @mouseleave="handleMouseLeave"
     >
       <!-- x-axis -->
-      <XAxis
+      <GraphXAxis
         :data="data"
         :var-name="activeVariable"
         :height="height"
@@ -33,7 +33,7 @@
         :margin="margin"
       />
       <!-- y-axis -->
-      <YAxis
+      <GraphYAxis
         :data="data"
         :var-name="activeVariable"
         :height="height"
@@ -41,7 +41,7 @@
         :margin="margin"
       />
       <!-- default plot -->
-      <LinePlot
+      <GraphLinePlot
         v-if="activeVariable !== 'rain'"
         :data="data"
         :var-name="activeVariable"
@@ -53,7 +53,7 @@
         :is-hovered="isHovered"
       >
         <!-- labels -->
-        <DotLabels
+        <GraphDotLabels
           v-show="!isHovered"
           :data="data"
           :var-name="activeVariable"
@@ -63,9 +63,9 @@
           :dot-fill="dotColor"
           :text-fill="dotColor"
         />
-      </LinePlot>
+      </GraphLinePlot>
       <!-- barchart -->
-      <BarChart
+      <GraphBarChart
         v-else
         :data="data"
         :var-name="activeVariable"
@@ -108,15 +108,6 @@
   import * as d3 from 'd3'
 
   import forecastVars from '@/data/forecastVars.json'
-
-  import usePlot from '@/composables/usePlot'
-  import usePlotFormatter from '@/composables/usePlotFormatter'
-
-  import XAxis from '@/components/graph/XAxis.vue'
-  import YAxis from '@/components/graph/YAxis.vue'
-  import LinePlot from '@/components/graph/LinePlot.vue'
-  import BarChart from '@/components/graph/BarChart.vue'
-  import DotLabels from '@/components/graph/DotLabels.vue'
 
   import { ForecastStation } from '@/composables/useForecastData'
 

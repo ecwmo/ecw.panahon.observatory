@@ -28,8 +28,6 @@
 <script lang="ts" setup>
   import { PropType } from 'vue'
 
-  import ForecastCard from '@/components/ForecastCard.vue'
-
   import { ForecastData } from '@/composables/useForecastData'
 
   const props = defineProps({
