@@ -10,37 +10,30 @@
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue'
   import { timeHour, TimeInterval } from 'd3'
 
   import { ForecastStation } from '@/composables/useForecastData'
 
-  const props = defineProps({
-    data: {
-      type: Object as PropType<ForecastStation>,
-      required: true,
-    },
-    varName: {
-      type: String,
-      required: true,
-    },
-    width: {
-      default: screen.width,
-      type: Number,
-    },
-    height: {
-      default: screen.width * 0.2,
-      type: Number,
-    },
-    margin: {
-      default: { top: 0, right: 0, bottom: 0, left: 0 },
-    },
-    dotFill: {
-      default: 'red',
-    },
-    textFill: {
-      default: 'black',
-    },
+  interface Props {
+    data: ForecastStation
+    varName: string
+    width?: number
+    height?: number
+    margin?: {
+      top: number
+      right: number
+      bottom: number
+      left: number
+    }
+    dotFill?: string
+    textFill?: string
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    width: screen.width,
+    height: screen.width * 0.2,
+    margin: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+    dotFill: 'red',
+    textFill: 'black',
   })
 
   const { data, varName, width, height, margin } = toRefs(props)

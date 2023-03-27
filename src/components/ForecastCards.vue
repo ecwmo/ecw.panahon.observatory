@@ -26,13 +26,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue'
-
   import { ForecastData } from '@/composables/useForecastData'
 
-  const props = defineProps({
-    data: { type: Object as PropType<ForecastData>, required: true },
-  })
+  interface Props {
+    data: ForecastData
+  }
+  const props = defineProps<Props>()
 
   const { data } = toRefs(props)
 

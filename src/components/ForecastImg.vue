@@ -13,11 +13,12 @@
 </template>
 
 <script lang="ts" setup>
-  const props = defineProps({
-    varName: { type: String, required: true },
-    day: { type: Number, default: 0 },
-    imgType: { type: Number, default: 0 },
-  })
+  interface Props {
+    varName: string
+    day?: number
+    imgType?: number
+  }
+  const props = withDefaults(defineProps<Props>(), { day: 0, imgType: 0 })
 
   const { varName, day, imgType } = toRefs(props)
 

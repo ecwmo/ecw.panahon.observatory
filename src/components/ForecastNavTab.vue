@@ -17,8 +17,15 @@
 </template>
 
 <script lang="ts" setup>
-  defineProps({ activeDay: { type: Number, required: true } })
-  defineEmits(['setActiveDay'])
+  interface Props {
+    activeDay: number
+  }
+  defineProps<Props>()
+
+  interface Emits {
+    (e: 'setActiveDay', value: number): void
+  }
+  defineEmits<Emits>()
 
   const tabs = [
     { label: 'Today', value: 0 },

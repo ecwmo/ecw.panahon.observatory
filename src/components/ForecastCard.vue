@@ -26,14 +26,13 @@
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue'
-
   import { ForecastCardData } from '@/composables/useForecastCardData'
 
-  defineProps({
-    name: { type: String, required: true },
-    title: { type: String, required: true },
-    data: { type: Object as PropType<ForecastCardData[]>, required: true },
-    icon: { type: String, required: true },
-  })
+  interface Props {
+    name: string
+    title: string
+    data: ForecastCardData[]
+    icon: string
+  }
+  defineProps<Props>()
 </script>

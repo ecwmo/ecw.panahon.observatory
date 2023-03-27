@@ -37,30 +37,27 @@
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue'
-
   interface Variable {
     name: string
     title: string
     imgVariants: string[]
   }
 
-  const props = defineProps({
-    data: {
-      type: Object as PropType<Variable[]>,
-      required: true,
-    },
-    activeVariable: {
-      type: String,
-      default: '',
-    },
-    activeType: {
-      type: Number,
-      default: 0,
-    },
+  interface Props {
+    data: Variable[]
+    activeVariable?: string
+    activeType: number
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    activeVariable: '',
+    activeType: 0,
   })
 
-  defineEmits(['update:activeVariable', 'update:activeType'])
+  interface Emits {
+    (e: 'update:activeVariable', value: string): void
+    (e: 'update:activeType', value: number): void
+  }
+  defineEmits<Emits>()
 
   const { data, activeVariable } = toRefs(props)
 

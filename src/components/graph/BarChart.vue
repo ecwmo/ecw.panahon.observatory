@@ -37,40 +37,36 @@
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue'
   import { select } from 'd3'
 
   import { ForecastStation } from '@/composables/useForecastData'
 
-  const props = defineProps({
-    data: {
-      type: Object as PropType<ForecastStation>,
-      required: true,
-    },
-    varName: {
-      type: String,
-      required: true,
-    },
-    width: {
-      default: screen.width,
-      type: Number,
-    },
-    height: {
-      default: screen.width * 0.2,
-      type: Number,
-    },
-    margin: {
-      default: { top: 0, right: 0, bottom: 0, left: 0 },
-    },
-    fill: {
-      default: 'blue',
-    },
-    stroke: {
-      default: 'blue',
-    },
+  interface Props {
+    data: ForecastStation
+    varName: string
+    width?: number
+    height?: number
+    margin?: {
+      top: number
+      right: number
+      bottom: number
+      left: number
+    }
+    fill?: string
+    stroke?: string
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    width: screen.width,
+    height: screen.width * 0.2,
+    margin: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+    fill: 'blue',
+    stroke: 'blue',
   })
 
-  defineEmits(['setHoveredBar'])
+  interface Emits {
+    (e: 'setHoveredBar', payload: MouseEvent): void
+  }
+  defineEmits<Emits>()
 
   const { data, varName, width, height, margin } = toRefs(props)
 

@@ -104,19 +104,16 @@
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue'
   import * as d3 from 'd3'
 
   import forecastVars from '@/data/forecastVars.json'
 
   import { ForecastStation } from '@/composables/useForecastData'
 
-  const props = defineProps({
-    data: {
-      type: Object as PropType<ForecastStation>,
-      required: true,
-    },
-  })
+  interface Props {
+    data: ForecastStation
+  }
+  const props = defineProps<Props>()
 
   const activeVariable = ref('wpd')
   const hoveredBar = ref()
