@@ -8,12 +8,12 @@
 
 <script lang="ts" setup>
   import {
-    area as d3area,
+    area as d3Area,
     axisLeft,
     axisTop,
     curveMonotoneX,
-    line as d3line,
-    select,
+    line as d3Line,
+    select as d3Select,
   } from 'd3'
 
   import { Point } from '@/composables/usePlot'
@@ -57,7 +57,7 @@
   const areaPlot = computed(() => {
     axisLeft(xScale.value)
     axisTop(yScale.value)
-    const area = d3area<Point>()
+    const area = d3Area<Point>()
       .curve(curveMonotoneX)
       .x((d) => xScale.value(d.x))
       .y0(yScale.value(minYVal.value))
@@ -69,7 +69,7 @@
   const linePlot = computed(() => {
     axisLeft(xScale.value)
     axisTop(yScale.value)
-    const line = d3line<Point>()
+    const line = d3Line<Point>()
       .curve(curveMonotoneX)
       .x((d) => xScale.value(d.x))
       .y((d) => yScale.value(d.y))
@@ -78,7 +78,7 @@
   })
 
   watch([isHovered], () => {
-    const line = select(linePlotEl.value)
+    const line = d3Select(linePlotEl.value)
     const strokeOpacity = isHovered.value ? '0.5' : null
     const fillOpacity = isHovered.value ? '0.1' : '0.25'
 

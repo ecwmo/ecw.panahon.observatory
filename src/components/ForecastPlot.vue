@@ -104,7 +104,7 @@
 </template>
 
 <script lang="ts" setup>
-  import * as d3 from 'd3'
+  import { bisectCenter, pointer as d3Pointer, select as d3Select } from 'd3'
 
   import forecastVars from '@/data/forecastVars.json'
 
@@ -179,19 +179,19 @@
     let i
     let transform = ''
     let pt = { x: new Date(), y: 0 }
-    const tooltip = d3.select('#tooltip')
+    const tooltip = d3Select('#tooltip')
 
     if (activeVariable.value !== 'rain') {
-      const pointer = d3.pointer(ev)
+      const pointer = d3Pointer(ev)
       const xm = xScale.value.invert(pointer[0])
       const dates = plotData.value.map((d) => d.x)
 
-      i = d3.bisectCenter(dates, xm)
+      i = bisectCenter(dates, xm)
       pt = plotData.value[i]
       transform = `translate(${xScale.value(pt.x)},${yScale.value(pt.y)})`
     } else {
       if (hoveredBar.value !== undefined) {
-        const bar = d3.select(hoveredBar.value.target)
+        const bar = d3Select(hoveredBar.value.target)
         const x = bar.select('rect').attr('x')
         i = hoveredBar.value.target.dataset['index']
         pt = plotData.value[i]

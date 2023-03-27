@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { select } from 'd3'
+  import { select as d3Select } from 'd3'
 
   import { ForecastStation } from '@/composables/useForecastData'
 
@@ -79,12 +79,12 @@
   )
 
   const handleMouseEnter = (ev: MouseEvent) => {
-    const bar = select(ev.target as HTMLElement)
+    const bar = d3Select(ev.target as HTMLElement)
     bar.attr('stroke-width', '5px').attr('fill-opacity', '0.1')
   }
 
   const handleMouseLeave = (ev: MouseEvent) => {
-    const bar = select(ev.target as HTMLElement)
+    const bar = d3Select(ev.target as HTMLElement)
     bar.attr('stroke-width', '2px').attr('fill-opacity', '0.25')
   }
 </script>
