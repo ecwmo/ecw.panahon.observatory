@@ -1,12 +1,15 @@
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
+import { configDefaults, defineConfig } from 'vitest/config'
 
-import Pages from 'vite-plugin-pages'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
+import Pages from 'vite-plugin-pages'
 
 export default defineConfig({
+  define: {
+    'import.meta.vitest': 'undefined',
+  },
   plugins: [
     vue(),
     Pages({
@@ -27,6 +30,7 @@ export default defineConfig({
   },
   test: {
     include: ['tests/**/*.test.ts'],
+    exclude: [...configDefaults.exclude, '**/__mocks__/**', '**/__tests__/**'],
     globals: true,
     environment: 'jsdom',
   },
