@@ -1,6 +1,6 @@
-import { computed, ref } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
 import axios from 'axios'
-import { useQuery } from 'vue-query'
+import { computed, ref } from 'vue'
 
 interface ForecastImgs {
   imgs: string[]
@@ -13,7 +13,7 @@ const useForecastImg = (variable = ref(''), day = ref(0), imgType = ref(0)) => {
   const fetcher = (): Promise<ForecastImgs> =>
     axios.get(`${baseUrl}/api/forecast.php?img=2`).then(({ data }) => data)
 
-  const { data } = useQuery('forecastImgs', fetcher)
+  const { data } = useQuery(['forecastImgs'], fetcher)
 
   const varName = computed(() =>
     variable.value !== 'rain' ? variable.value : 'rainchance'

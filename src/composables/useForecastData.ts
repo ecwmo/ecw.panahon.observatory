@@ -1,7 +1,7 @@
-import { computed } from 'vue'
-import { add as dfAdd, format as dfFormat } from 'date-fns'
+import { useQuery } from '@tanstack/vue-query'
 import axios from 'axios'
-import { useQuery } from 'vue-query'
+import { add as dfAdd, format as dfFormat } from 'date-fns'
+import { computed } from 'vue'
 
 export interface ForecastData {
   [index: string]: any
@@ -52,7 +52,7 @@ const useForecastData = () => {
   const fetcher = (): Promise<ForecastStationsRaw> =>
     axios.get(url).then(({ data }) => data)
 
-  const { data } = useQuery('forecastData', fetcher)
+  const { data } = useQuery(['forecastData'], fetcher)
 
   const forecastDailyData = computed((): ForecastStation[] =>
     data.value !== undefined
