@@ -46,7 +46,7 @@ export interface ForecastStationsRaw {
 }
 
 const useForecastData = () => {
-  const url = 'https://panahon.observatory.ph/api/forecast.php'
+  const url = 'https://panahon.observatory.ph/api/forecast'
   const curDate = new Date(Date.now())
 
   const fetcher = (): Promise<ForecastStationsRaw> =>
