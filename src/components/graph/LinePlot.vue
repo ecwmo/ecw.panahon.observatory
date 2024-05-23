@@ -7,6 +7,7 @@
 </template>
 
 <script lang="ts" setup>
+  import { ref, computed, watch, toRefs } from 'vue'
   import {
     area as d3Area,
     axisLeft,
@@ -16,35 +17,34 @@
     select as d3Select,
   } from 'd3'
 
-  import { Point } from '@/composables/usePlot'
+  import type { Point } from '@/composables/usePlot'
+  import usePlot from '@/composables/usePlot'
 
-  import { ForecastStation } from '@/composables/useForecastData'
+  const props = withDefaults(
+    defineProps<{
+      width?: number
+      height?: number
+      margin?: {
+        top: number
+        right: number
+        bottom: number
+        left: number
+      }
+      fill?: string
+      stroke?: string
+      isHovered?: boolean
+    }>(),
+    {
+      width: screen.width,
+      height: screen.width * 0.2,
+      margin: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+      fill: 'red',
+      stroke: 'red',
+      isHovered: false,
+    },
+  )
 
-  interface Props {
-    data: ForecastStation
-    varName: string
-    width?: number
-    height?: number
-    margin?: {
-      top: number
-      right: number
-      bottom: number
-      left: number
-    }
-    fill?: string
-    stroke?: string
-    isHovered?: boolean
-  }
-  const props = withDefaults(defineProps<Props>(), {
-    width: screen.width,
-    height: screen.width * 0.2,
-    margin: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-    fill: 'red',
-    stroke: 'red',
-    isHovered: false,
-  })
-
-  const { data, varName, width, height, margin, isHovered } = toRefs(props)
+  const { width, height, margin, isHovered } = toRefs(props)
   const linePlotEl = ref()
 
   const {
@@ -52,7 +52,7 @@
     xTScale: xScale,
     yScale,
     minYVal,
-  } = usePlot(data, varName, height, width, margin)
+  } = usePlot(height, width, margin)
 
   const areaPlot = computed(() => {
     axisLeft(xScale.value)

@@ -19,38 +19,35 @@
 </template>
 
 <script lang="ts" setup>
-  import { ForecastStation } from '@/composables/useForecastData'
+  import { toRefs } from 'vue'
 
-  interface Props {
-    data: ForecastStation
-    varName: string
-    width?: number
-    height?: number
-    margin?: {
-      top: number
-      right: number
-      bottom: number
-      left: number
-    }
-  }
-  const props = withDefaults(defineProps<Props>(), {
-    width: screen.width,
-    height: screen.width * 0.2,
-    margin: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-  })
+  import usePlot from '@/composables/usePlot'
 
-  const { data, varName, width, height, margin } = toRefs(props)
-
-  const { xAxisPath, xAxisTicks } = usePlot(
-    data,
-    varName,
-    height,
-    width,
-    margin
+  const props = withDefaults(
+    defineProps<{
+      width?: number
+      height?: number
+      margin?: {
+        top: number
+        right: number
+        bottom: number
+        left: number
+      }
+    }>(),
+    {
+      width: screen.width,
+      height: screen.width * 0.2,
+      margin: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+    },
   )
+
+  const { width, height, margin } = toRefs(props)
+
+  const { xAxisPath, xAxisTicks } = usePlot(height, width, margin)
 </script>
 
-<style lang="sass" scoped>
-  text
-    font-size: 1.4rem
+<style scoped>
+  text {
+    font-size: 1.4rem;
+  }
 </style>

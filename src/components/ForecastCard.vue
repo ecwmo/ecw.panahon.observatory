@@ -6,7 +6,7 @@
     data-test="card"
   >
     <div class="w-1/5 flex justify-center" data-test="card-icon">
-      <img :src="icon" :class="[name === 'temp' ? 'w-3/4' : '']" />
+      <img :src="icon.src" :class="[name === 'temp' ? 'w-3/4' : '']" />
     </div>
     <div class="w-4/5 flex-grow flex flex-col items-center">
       <span data-test="card-title">{{ title }}</span>
@@ -26,13 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ForecastCardData } from '@/composables/useForecastCardData'
+  import type { ForecastCardInfo } from '@/composables/useForecastCardData'
 
-  interface Props {
-    name: string
-    title: string
-    data: ForecastCardData[]
-    icon: string
-  }
-  defineProps<Props>()
+  defineProps<ForecastCardInfo>()
 </script>

@@ -5,11 +5,7 @@
       class="flex flex-wrap justify-between items-center bg-white shadow-lg px-2 md:px-6 py-2"
     >
       <div class="flex items-center flex-no-shrink mr-6">
-        <img
-          src="@/assets/logo.png"
-          alt="Logo"
-          class="h-8 w-8 md:h-10 md:w-10 mr-2"
-        />
+        <img :src="logo.src" alt="Logo" class="h-8 w-8 md:h-10 md:w-10 mr-2" />
         <span class="font-semibold text-gray-900 text-lg md:text-2xl"
           >Manila Observatory</span
         >
@@ -34,13 +30,13 @@
           class="flex flex-col flex-grow items-center md:flex-row md:justify-end"
           :class="open ? 'absolute right-0 bg-white shadow-lg' : ''"
         >
-          <router-link
+          <a
             v-for="tab in tabs"
             :key="tab.label"
-            :to="tab.to"
+            :href="tab.href"
             class="p-2 font-semibold text-gray-500 hover:text-blue-500 transition duration-300"
             @click="open = false"
-            >{{ tab.label }}</router-link
+            >{{ tab.label }}</a
           >
           <a
             v-for="tab in tabs2"
@@ -56,11 +52,15 @@
 </template>
 
 <script lang="ts" setup>
+  import { ref } from 'vue'
+
+  import logo from '@/assets/logo.png'
+
   const open = ref(false)
 
   const tabs = [
-    { label: 'Power • Weather', to: '/' },
-    { label: 'Acknowledgements', to: '/acknowledgements' },
+    { label: 'Power • Weather', href: '/' },
+    { label: 'Acknowledgements', href: '/acknowledgements' },
   ]
 
   const tabs2 = [
@@ -70,7 +70,8 @@
   const toggle = () => (open.value = !open.value)
 </script>
 
-<style lang="sass" scoped>
-  .router-link-active
-    @apply text-gray-900 border-b-2 border-gray-900
+<style scoped>
+  .router-link-active {
+    --at-apply: text-gray-900 border-b-2 border-gray-900;
+  }
 </style>

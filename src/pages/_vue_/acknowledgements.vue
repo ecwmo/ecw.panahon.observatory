@@ -90,27 +90,27 @@
           list: [
             {
               name: 'SM Group',
-              logo: smLogo,
+              logo: smLogo.src,
               logoClass: 'h-28 p-2.5 bg-white',
             },
             {
               name: 'Ayala Group',
-              logo: acEnergyLogo,
+              logo: acEnergyLogo.src,
               logoClass: 'h-24 bg-white',
             },
             {
               name: 'RVO Group',
-              logo: alphalandLogo,
+              logo: alphalandLogo.src,
               logoClass: 'h-20 p-0.5 bg-white',
             },
             {
               name: 'RSA Group',
-              logo: sanMiguelLogo,
+              logo: sanMiguelLogo.src,
               logoClass: 'h-20 p-0.5',
             },
             {
               name: 'MVP Group',
-              logo: mvpLogo,
+              logo: mvpLogo.src,
               logoClass: 'h-28 p-1.5 bg-white',
             },
           ],
@@ -121,12 +121,12 @@
           list: [
             {
               name: 'La Filipina Uy Gongco',
-              logo: lfugGOCLogo,
+              logo: lfugGOCLogo.src,
               logoClass: 'h-24 bg-white p-1.5',
             },
             {
               name: 'Shell Philippines',
-              logo: shellLogo,
+              logo: shellLogo.src,
               logoClass: 'h-24 bg-white p-3',
             },
           ],

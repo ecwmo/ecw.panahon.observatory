@@ -26,14 +26,13 @@
 </template>
 
 <script lang="ts" setup>
-  import { ForecastData } from '@/composables/useForecastData'
+  import { useStore } from '@nanostores/vue'
 
-  interface Props {
-    data: ForecastData
-  }
-  const props = defineProps<Props>()
+  import { $activeDayData } from '@/stores/forecast'
+  import useForecastCardData from '@/composables/useForecastCardData'
+  import ForecastCard from '@/components/ForecastCard.vue'
 
-  const { data } = toRefs(props)
+  const data = useStore($activeDayData)
 
   const { cleanEnergyData, weatherData } = useForecastCardData(data)
 

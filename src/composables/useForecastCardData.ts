@@ -1,71 +1,71 @@
-import { computed, Ref } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import turbineIcon from '@/assets/icons/wind-turbine.png'
 import sunIcon from '@/assets/icons/sun.png'
 import thermometerIcon from '@/assets/icons/thermometer.png'
 import windIcon from '@/assets/icons/wind.png'
 import rainCloudIcon from '@/assets/icons/rain-cloud.png'
 
-import { ForecastData } from '@/composables/useForecastData'
+import type { ForecastData } from '@/stores/forecast'
 
-export interface ForecastCardData {
+export type ForecastCardData = {
   name?: string
   value?: string
 }
 
-export interface ForecastCardInfo {
+export type ForecastCardInfo = {
   name: string
   units?: string
   title: string
   data: ForecastCardData[]
-  icon: string
+  icon: ImageMetadata
 }
 
-const useForecastCardData = (forecastData: Ref<ForecastData>) => {
+const useForecastCardData = (forecastData: MaybeRefOrGetter<ForecastData>) => {
   const cleanEnergyData = computed((): ForecastCardInfo[] => {
-    if (forecastData.value !== undefined) {
-      return [
-        {
-          name: 'wpd',
-          units: 'MW',
-          title: 'WIND POWER',
-          data: [
-            { name: 'Ave', value: forecastData.value.wndPow.toFixed(1) },
-            { name: 'Max', value: forecastData.value.wndPowMax.toFixed(1) },
-          ],
-          icon: turbineIcon,
-        },
-        {
-          name: 'ppv',
-          units: 'MW',
-          title: 'SOLAR POWER',
-          data: [
-            { name: 'Ave', value: forecastData.value.solPow.toFixed(1) },
-            { name: 'Max', value: forecastData.value.solPowMax.toFixed(1) },
-          ],
-          icon: sunIcon,
-        },
-      ]
-    }
-
-    return []
+    const data = toValue(forecastData)
+    return data !== undefined
+      ? [
+          {
+            name: 'wpd',
+            units: 'MW',
+            title: 'WIND POWER',
+            data: [
+              { name: 'Ave', value: data?.wndPow?.toFixed(1) },
+              { name: 'Max', value: data?.wndPowMax?.toFixed(1) },
+            ],
+            icon: turbineIcon,
+          },
+          {
+            name: 'ppv',
+            units: 'MW',
+            title: 'SOLAR POWER',
+            data: [
+              { name: 'Ave', value: data?.solPow?.toFixed(1) },
+              { name: 'Max', value: data?.solPowMax?.toFixed(1) },
+            ],
+            icon: sunIcon,
+          },
+        ]
+      : []
   })
 
   const weatherData = computed((): ForecastCardInfo[] => {
-    if (forecastData.value !== undefined) {
+    const data = toValue(forecastData)
+    if (data !== undefined) {
       const rainChanceStr =
-        forecastData.value.rainChanceStr === 'Medium'
+        data.rainChanceStr === 'Medium'
           ? 'Med'
-          : forecastData.value.rainChanceStr === 'NoChance'
-          ? 'None'
-          : forecastData.value.rainChanceStr
+          : data.rainChanceStr === 'NoChance'
+            ? 'None'
+            : data.rainChanceStr ?? undefined
       return [
         {
           name: 'temp',
           units: '°C',
           title: 'TEMPERATURE',
           data: [
-            { name: 'Min', value: forecastData.value.tempMin.toFixed(1) },
-            { name: 'Max', value: forecastData.value.tempMax.toFixed(1) },
+            { name: 'Min', value: data?.tempMin?.toFixed(1) },
+            { name: 'Max', value: data?.tempMax?.toFixed(1) },
           ],
           icon: thermometerIcon,
         },
@@ -74,8 +74,8 @@ const useForecastCardData = (forecastData: Ref<ForecastData>) => {
           units: 'kph',
           title: 'WIND SPEED',
           data: [
-            { name: 'Min', value: forecastData.value.wspdMin.toFixed(1) },
-            { name: 'Max', value: forecastData.value.wspdMax.toFixed(1) },
+            { name: 'Min', value: data.wspdMin?.toFixed(1) },
+            { name: 'Max', value: data.wspdMax?.toFixed(1) },
           ],
           icon: windIcon,
         },

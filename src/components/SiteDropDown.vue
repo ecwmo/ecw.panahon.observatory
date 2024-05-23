@@ -13,17 +13,17 @@
   </select>
 </template>
 
-<script lang="ts" setup>
-  interface Site {
+<script lang="ts" setup generic="T extends Site">
+  export type Site = {
     name: string
   }
 
   interface Props {
-    sites?: Site[]
+    sites?: T[]
     modelValue?: string
   }
   withDefaults(defineProps<Props>(), {
-    sites: () => [{ name: '' }],
+    sites: () => [{ name: '' }] as T[],
     modelValue: '',
   })
 

@@ -1,17 +1,24 @@
-import { computed, Ref } from 'vue'
-import { scaleTime, scaleLinear, scaleBand, timeDay, TimeInterval } from 'd3'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import {
+  scaleTime,
+  scaleLinear,
+  scaleBand,
+  timeDay,
+  type TimeInterval,
+} from 'd3'
+import { useStore } from '@nanostores/vue'
 
 import forecastVars from '@/data/forecastVars.json'
+import { $hourlyData, $activeVarName } from '@/stores/forecast'
 
-import { ForecastStation } from '@/composables/useForecastData'
 import usePlotFormatter from '@/composables/usePlotFormatter'
 
-export interface Point {
+export type Point = {
   x: Date
   y: number
 }
 
-interface Margin {
+type Margin = {
   top: number
   right: number
   bottom: number
@@ -19,23 +26,24 @@ interface Margin {
 }
 
 const usePlot = (
-  data: Ref<ForecastStation>,
-  varName: Ref<string>,
-  height: Ref<number>,
-  width: Ref<number>,
-  margin: Ref<Margin>
+  height: MaybeRefOrGetter<number>,
+  width: MaybeRefOrGetter<number>,
+  margin: MaybeRefOrGetter<Margin>,
 ) => {
+  const data = useStore($hourlyData)
+  const varName = useStore($activeVarName)
+
   const { valueText, dateText } = usePlotFormatter(varName)
 
   const plotData = computed((): Point[] => {
     if (data.value !== undefined) {
-      return data.value.forecast.map((d) => {
+      return data.value.map((d) => {
         const { name2 } = forecastVars.find(
-          (f) => f.name === varName.value
+          (f) => f.name === varName.value,
         ) || { name2: '' }
         return {
           x: new Date(d.timestamp),
-          y: d[name2],
+          y: (d as Record<string, any>)[name2],
         }
       })
     }
@@ -47,55 +55,61 @@ const usePlot = (
 
   const validPlotData = computed(() => plotData.value.filter(valueIsValid))
 
+  const plotOpts = computed(() => ({
+    height: toValue(height),
+    width: toValue(width),
+    margin: toValue(margin),
+  }))
+
   const rangeX = computed(() => [
-    margin.value.left,
-    width.value - margin.value.right,
+    plotOpts.value.margin.left,
+    plotOpts.value.width - plotOpts.value.margin.right,
   ])
 
   const rangeY = computed(() => [
-    height.value - margin.value.bottom,
-    margin.value.top,
+    plotOpts.value.height - plotOpts.value.margin.bottom,
+    plotOpts.value.margin.top,
   ])
 
   const minXVal = computed(() => {
-    if (varName.value === 'rain') return 0
+    if (toValue(varName) === 'rain') return 0
 
     return new Date(Math.min(...plotData.value.map((d) => d.x.getTime())))
   })
 
   const maxXVal = computed(() => {
-    if (varName.value === 'rain') return plotData.value.length - 1
+    if (toValue(varName) === 'rain') return plotData.value.length - 1
 
     return new Date(Math.max(...plotData.value.map((d) => d.x.getTime())))
   })
 
   const minYVal = computed(() => {
-    if (varName.value === 'rain') return 0
+    if (toValue(varName) === 'rain') return 0
 
     return Math.min(...plotData.value.map((d) => d.y)) * 0.95
   })
 
   const maxYVal = computed(() => {
-    if (varName.value === 'rain') return 1
+    if (toValue(varName) === 'rain') return 1
     return Math.max(...plotData.value.map((d) => d.y))
   })
 
   const xScale = computed(() =>
     scaleBand()
       .range(rangeX.value)
-      .domain(plotData.value.map((d, i) => `${i}`))
+      .domain(plotData.value.map((d, i) => `${i}`)),
   )
 
   const xTScale = computed(() =>
-    scaleTime().range(rangeX.value).domain([minXVal.value, maxXVal.value])
+    scaleTime().range(rangeX.value).domain([minXVal.value, maxXVal.value]),
   )
 
   const yScale = computed(() =>
-    scaleLinear().range(rangeY.value).domain([minYVal.value, maxYVal.value])
+    scaleLinear().range(rangeY.value).domain([minYVal.value, maxYVal.value]),
   )
 
   const xAxisPath = computed(() => {
-    if (varName.value === 'rain') {
+    if (toValue(varName) === 'rain') {
       const x_min = `${minXVal.value}`
       const x_max = `${maxXVal.value}`
       return `M${xScale.value(x_min)},0H${xScale.value(x_max)}`
@@ -105,7 +119,7 @@ const usePlot = (
   })
 
   const xAxisTicks = computed(() => {
-    if (varName.value === 'rain') {
+    if (toValue(varName) === 'rain') {
       return plotData.value
         .filter((d) => d.x.getHours() === 0)
         .map((d) => {
@@ -128,7 +142,7 @@ const usePlot = (
 
   const yAxisTicks = computed(() => {
     const ticks =
-      varName.value !== 'rain' ? yScale.value.ticks(4) : [0, 0.33, 0.67, 1]
+      toValue(varName) !== 'rain' ? yScale.value.ticks(4) : [0, 0.33, 0.67, 1]
 
     return ticks.map((y) => {
       const transform = `translate(0,${yScale.value(y)})`

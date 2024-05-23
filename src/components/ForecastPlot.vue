@@ -4,16 +4,16 @@
       class="text-sm md:text-lg font-extralight border-b border-grey-800 mt-2 md:mt-4 flex justify-start"
     >
       <a
-        v-for="v in forecastVars"
+        v-for="v in forecastVariables"
         :key="v.name"
         class="p-1.5 md:py-2 md:px-4 text-center"
         href="#"
         :class="[
-          activeVariable === v.name
+          activeVarName === v.name
             ? 'bg-gray-500 font-semibold'
             : 'hover:bg-gray-500',
         ]"
-        @click.prevent="activeVariable = v.name"
+        @click.prevent="setActiveVarName(v.name)"
         >{{ v.title }}</a
       >
     </nav>
@@ -25,26 +25,12 @@
       @mouseleave="handleMouseLeave"
     >
       <!-- x-axis -->
-      <GraphXAxis
-        :data="data"
-        :var-name="activeVariable"
-        :height="height"
-        :width="width"
-        :margin="margin"
-      />
+      <GraphXAxis :height="height" :width="width" :margin="margin" />
       <!-- y-axis -->
-      <GraphYAxis
-        :data="data"
-        :var-name="activeVariable"
-        :height="height"
-        :width="width"
-        :margin="margin"
-      />
+      <GraphYAxis :height="height" :width="width" :margin="margin" />
       <!-- default plot -->
       <GraphLinePlot
-        v-if="activeVariable !== 'rain'"
-        :data="data"
-        :var-name="activeVariable"
+        v-if="activeVarName !== 'rain'"
         :stroke="stroke"
         :fill="fill"
         :height="height"
@@ -55,8 +41,6 @@
         <!-- labels -->
         <GraphDotLabels
           v-show="!isHovered"
-          :data="data"
-          :var-name="activeVariable"
           :height="height"
           :width="width"
           :margin="margin"
@@ -67,8 +51,6 @@
       <!-- barchart -->
       <GraphBarChart
         v-else
-        :data="data"
-        :var-name="activeVariable"
         :stroke="stroke"
         :fill="fill"
         :height="height"
@@ -79,7 +61,7 @@
       <!-- tooltip -->
       <g v-show="isHovered" id="tooltip">
         <circle
-          v-if="activeVariable !== 'rain'"
+          v-if="activeVarName !== 'rain'"
           :fill="dotColor"
           stroke="none"
           r="6"
@@ -104,23 +86,29 @@
 </template>
 
 <script lang="ts" setup>
+  import { ref, computed } from 'vue'
   import { bisectCenter, pointer as d3Pointer, select as d3Select } from 'd3'
+  import { useStore } from '@nanostores/vue'
 
-  import forecastVars from '@/data/forecastVars.json'
+  import usePlot from '@/composables/usePlot'
+  import usePlotFormatter from '@/composables/usePlotFormatter'
+  import {
+    forecastVariables,
+    $activeVarName,
+    setActiveVarName,
+  } from '@/stores/forecast'
 
-  import { ForecastStation } from '@/composables/useForecastData'
+  import GraphXAxis from '@/components/graph/XAxis.vue'
+  import GraphYAxis from '@/components/graph/YAxis.vue'
+  import GraphBarChart from '@/components/graph/BarChart.vue'
+  import GraphLinePlot from '@/components/graph/LinePlot.vue'
+  import GraphDotLabels from '@/components/graph/DotLabels.vue'
 
-  interface Props {
-    data: ForecastStation
-  }
-  const props = defineProps<Props>()
-
-  const activeVariable = ref('wpd')
+  const activeVarName = useStore($activeVarName)
   const hoveredBar = ref()
 
   const margin = ref({ top: 40, right: 30, bottom: 30, left: 40 })
 
-  const { data } = toRefs(props)
   const isHovered = ref(false)
 
   const width = computed(() => screen.width)
@@ -137,39 +125,39 @@
     xTScale: xScale,
     yScale,
     valueIsValid,
-  } = usePlot(data, activeVariable, height, width, margin)
+  } = usePlot(height, width, margin)
 
-  const { valueText, dateText } = usePlotFormatter(activeVariable)
+  const { valueText, dateText } = usePlotFormatter(activeVarName)
 
   const viewBox = computed(() => `0 0 ${width.value} ${height.value}`)
 
   const stroke = computed(() => {
-    const { stroke } = forecastVars.find(
-      (f) => f.name === activeVariable.value
+    const { stroke } = forecastVariables.find(
+      (f) => f.name === activeVarName.value,
     ) || { stroke: 'black' }
 
     return stroke
   })
 
   const fill = computed(() => {
-    const { fill } = forecastVars.find(
-      (f) => f.name === activeVariable.value
+    const { fill } = forecastVariables.find(
+      (f) => f.name === activeVarName.value,
     ) || { fill: 'black' }
 
     return fill
   })
 
   const dotColor = computed(() => {
-    const { dotColor } = forecastVars.find(
-      (f) => f.name === activeVariable.value
+    const { dotColor } = forecastVariables.find(
+      (f) => f.name === activeVarName.value,
     ) || { dotColor: 'black' }
 
     return dotColor
   })
 
   const valueTextColor = computed(() => {
-    const { dotColor } = forecastVars.find(
-      (f) => f.name === activeVariable.value
+    const { dotColor } = forecastVariables.find(
+      (f) => f.name === activeVarName.value,
     ) || { dotColor: 'black' }
 
     return dotColor
@@ -181,7 +169,7 @@
     let pt = { x: new Date(), y: 0 }
     const tooltip = d3Select('#tooltip')
 
-    if (activeVariable.value !== 'rain') {
+    if (activeVarName.value !== 'rain') {
       const pointer = d3Pointer(ev)
       const xm = xScale.value.invert(pointer[0])
       const dates = plotData.value.map((d) => d.x)
@@ -216,15 +204,20 @@
   }
 </script>
 
-<style lang="sass" scoped>
-  svg
-    font-size: 0.8rem
-    stroke-width: 2px
-  #tooltip
-    .dateText
-      font-size: 0.8rem
-    text-shadow: 0 0 0.6rem #222
-  .valueText
-    font-size: 1.2rem
-    text-shadow: 0 0 0.6rem #222
+<style scoped>
+  svg {
+    font-size: 0.8rem;
+    stroke-width: 2px;
+  }
+  #tooltipi {
+    text-shadow: 0 0 0.6rem #222;
+  }
+
+  #tooltip .dateText {
+    font-size: 0.8rem;
+  }
+  .valueText {
+    font-size: 1.2rem;
+    text-shadow: 0 0 0.6rem #222;
+  }
 </style>

@@ -37,46 +37,41 @@
 </template>
 
 <script lang="ts" setup>
+  import { toRefs } from 'vue'
   import { select as d3Select } from 'd3'
 
-  import { ForecastStation } from '@/composables/useForecastData'
+  import usePlot from '@/composables/usePlot'
 
-  interface Props {
-    data: ForecastStation
-    varName: string
-    width?: number
-    height?: number
-    margin?: {
-      top: number
-      right: number
-      bottom: number
-      left: number
-    }
-    fill?: string
-    stroke?: string
-  }
-  const props = withDefaults(defineProps<Props>(), {
-    width: screen.width,
-    height: screen.width * 0.2,
-    margin: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-    fill: 'blue',
-    stroke: 'blue',
-  })
+  const props = withDefaults(
+    defineProps<{
+      width?: number
+      height?: number
+      margin?: {
+        top: number
+        right: number
+        bottom: number
+        left: number
+      }
+      fill?: string
+      stroke?: string
+    }>(),
+    {
+      width: screen.width,
+      height: screen.width * 0.2,
+      margin: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+      fill: 'blue',
+      stroke: 'blue',
+    },
+  )
 
   interface Emits {
     (e: 'setHoveredBar', payload: MouseEvent): void
   }
   defineEmits<Emits>()
 
-  const { data, varName, width, height, margin } = toRefs(props)
+  const { width, height, margin } = toRefs(props)
 
-  const { plotData, xScale, yScale } = usePlot(
-    data,
-    varName,
-    height,
-    width,
-    margin
-  )
+  const { plotData, xScale, yScale } = usePlot(height, width, margin)
 
   const handleMouseEnter = (ev: MouseEvent) => {
     const bar = d3Select(ev.target as HTMLElement)

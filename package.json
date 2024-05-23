@@ -1,40 +1,42 @@
 {
-  "name": "ecw-app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "ecw-astro-app",
+  "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "dev": "vite",
-    "test": "vitest",
-    "build": "vue-tsc --noEmit && vite build",
-    "serve": "vite preview"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test:unit": "vitest"
   },
   "dependencies": {
-    "@tanstack/vue-query": "^4.27.0",
+    "@astrojs/check": "^0.5.10",
+    "@astrojs/vue": "^4.1.0",
+    "@nanostores/vue": "^0.10.0",
+    "@tanstack/vue-query": "^5.37.1",
+    "astro": "^4.7.1",
     "axios": "^0.27.2",
-    "d3": "^7.8.3",
+    "d3": "^7.9.0",
     "date-fns": "^2.29.2",
-    "vue": "^3.2.47",
-    "vue-router": "^4.1.6"
+    "nanostores": "^0.10.3",
+    "typescript": "^5.4.5",
+    "vue": "^3.4.26"
   },
   "devDependencies": {
-    "@types/d3": "^7.4.0",
-    "@types/node": "^18.15.10",
-    "@vitejs/plugin-vue": "^4.1.0",
+    "@types/d3": "^7.4.3",
+    "@unocss/reset": "^0.60.3",
+    "@unocss/transformer-directives": "^0.60.3",
     "@vue/test-utils": "^2.0.2",
-    "autoprefixer": "^10.4.14",
-    "eslint": "^8.36.0",
     "jsdom": "^20.0.0",
-    "postcss": "^8.4.21",
-    "prettier": "^2.8.7",
-    "sass": "^1.49.8",
-    "tailwindcss": "^3.2.7",
-    "typescript": "^4.9.5",
-    "unplugin-auto-import": "^0.15.2",
-    "unplugin-vue-components": "^0.24.1",
-    "vite": "^4.2.1",
-    "vite-plugin-pages": "^0.29.0",
-    "vitest": "^0.22.1",
-    "vue-tsc": "^1.3.8"
-  }
+    "lightningcss": "^1.25.0",
+    "prettier": "^3.2.5",
+    "prettier-plugin-astro": "^0.13.0",
+    "unocss": "^0.60.3",
+    "vite": "^5.2.11",
+    "vite-plugin-mkcert": "^1.17.5",
+    "vitest": "^1.6.0",
+    "zod": "^3.23.8"
+  },
+  "packageManager": "pnpm@9.1.2+sha512.127dc83b9ea10c32be65d22a8efb4a65fb952e8fefbdfded39bdc3c97efc32d31b48b00420df2c1187ace28c921c902f0cb5a134a4d032b8b5295cbfa2c681e2"
 }
